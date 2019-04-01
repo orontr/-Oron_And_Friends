@@ -13,7 +13,7 @@ namespace AppointmentScheduling.Models
         [Required]
         public string SecurityQuestion { get; set; }
         [Required]
-        public string UseSecurityAnswerrName { get; set; }
+        public string SecurityAnswer { get; set; }
 
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AppointmentScheduling.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -8,9 +9,17 @@ namespace AppointmentScheduling.Controllers
 {
     public class PatientController : Controller
     {
-        // GET: Patient
-        public ActionResult Index()
+        private bool Authorize()
         {
+            if (Session["CurrentUser"] == null)
+                return false;
+            else
+                return (((User)Session["CurrentUser"]).UserType == false);
+        }
+        public ActionResult PatientPage()
+        {
+            if (!Authorize())
+                return RedirectToAction("RedirectByUser", "Home");
             return View();
         }
     }
