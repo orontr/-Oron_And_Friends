@@ -10,6 +10,7 @@ namespace AppointmentScheduling.DAL
     public class UserDal : DbContext
     {
         public DbSet<User> Users { get; set; }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
