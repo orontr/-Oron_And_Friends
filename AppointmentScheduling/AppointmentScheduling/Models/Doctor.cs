@@ -13,20 +13,22 @@ namespace AppointmentScheduling.Models
         public string DoctorLicense { get; set; }
 
         [Required]
+        [RegularExpression("^[A-Za-z ]*$", ErrorMessage = "Must use letters only")]
         public string FirstName { get; set; }
 
         [Required]
+        [RegularExpression("^[A-Za-z ]*$", ErrorMessage = "Must use letters only")]
         public string LastName { get; set; }
 
         [Required]
         [RegularExpression("^[0-9]{9}$", ErrorMessage = "Doctor Id must be 9 digits (digits 0-9)")]
         public string DoctorID { get; set; }
 
-        [Required(ErrorMessage = "The email address is required")]
+        [Required(ErrorMessage = "The Email Address is required")]
         [EmailAddress(ErrorMessage = "Invalid Email Address")]
         public string DoctorEmail { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "The Doctor Specialization is required")]
         public string DoctorSpecialization { get; set; }
 
         [Required]
