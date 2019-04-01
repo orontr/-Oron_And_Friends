@@ -1,7 +1,97 @@
-﻿
+﻿@model AppointmentScheduling.ViewModel.AppointmentViewModel
+@using AppointmentScheduling.Models
 @{
-    ViewBag.Title = "AddDocAppointment";
+    Layout = null;
 }
 
-<h2>AddDocAppointment</h2>
+<!DOCTYPE html>
 
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Add Doctor's Appointment</title>
+</head>
+<script src="~/Scripts/jquery-3.3.1.js"></script>
+<script src="~/Scripts/jquery.validate.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+<body>
+    <h3 style="color:hotpink">Add New Doctor's Appointment</h3>
+    <div>
+        <form id="frmmAdd">
+            <i style="color:red">@TempData["error"]</i><br />
+            <table>
+                <tr>
+                    <td>Patient Id: </td>
+                    <td>@Html.TextBoxFor(m => m.Appointment.PatientId) @Html.ValidationMessageFor(x => x.Appointment.PatientId)</td>
+                </tr>
+                <tr>
+                    <td>Appointment Time: </td>
+                    <td>@Html.TextBoxFor(m => m.Appointment.Time) @Html.ValidationMessageFor(x => x.Appointment.Time)</td>
+                </tr>
+                <tr>
+                    <td>Appointment Date: </td>
+                    <td>@Html.TextBoxFor(m => m.Appointment.Date) @Html.ValidationMessageFor(x => x.Appointment.Date)</td>
+                </tr>
+                <tr>
+                    <td>Doctor's License: </td>
+                    <td>@Html.TextBoxFor(m => m.Appointment.DoctorLicense) @Html.ValidationMessageFor(x => x.Appointment.DoctorLicense)</td>
+                </tr>
+
+
+                <tr>
+                    <td><input id="btnSubmit" type="button" onclick="SendAppointmentData()" value="Add Doctor Appointment" /></td>
+                </tr>
+            </table>
+        </form>
+
+
+    </div>
+    <br />
+    @*@Html.Partial("DisplayEmployees", Model)*@
+    <b>Existing Appointments:</b>
+    <div style="color:red" id="status"></div>
+    <table id="appointmentTable">
+        <tr>
+            <td>Patient Id</td>
+            <td>Appointment Time</td>
+            <td>Appointment Date</td>
+            <td>Doctor's License</td>
+        </tr>
+    </table>
+
+    <script>
+        $("#status").text("Loading Appointments.....Please Wait");
+        $.get("GetAppointmentsByJson", null, BindData);//null beacause we dont want to send anything to the server
+        function BindData(Appointments) {
+            $("#empTable").find("tr:gt(0)").remove();
+            var tbl = $("#empTable");
+            for (k = 0; k < Appointments.length; k++) {
+                var newRow = "<tr>" +
+                    "<td>" + Appointments[k].PatientId + "</td>" +
+                    "<td>" + Appointments[k].Time + "</td>" +
+                    "<td>" + Appointments[k].Date + "</td>" +
+                    "<td>" + Appointments[k].DoctorLicense + "</td>" +
+                    "</tr>";
+                tbl.append(newRow);
+            }
+
+            $("#status").text("");
+
+        }
+
+        function SendAppointmentData() {
+            var frmmData = $("#frmmAdd").serialize();//step 1+2
+            $("#status").text("Saving Appointment.....Please Wait");
+            $.post("SubmitAppointment", frmmData, BindData);
+            $("#Appointment_PatientId").val("");
+            $("#Appointment_Time").val("");
+            $("#Appointment_Date").val("");
+            $("#Appointment_DoctorLicense").val("");
+            $("#status").text("");
+        }
+    </script>
+    <br />
+    @Html.ActionLink("Go Back To Home Page", "Index", "Home")
+</body>
+</html>
