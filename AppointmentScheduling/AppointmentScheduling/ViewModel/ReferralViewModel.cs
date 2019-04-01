@@ -3,7 +3,7 @@ using System.Web;
 
 namespace AppointmentScheduling.ViewModel
 {
-    public class RefrralViewModel : IHttpHandler
+    public class ReferralViewModel : IHttpHandler
     {
         /// <summary>
         /// You will need to configure this handler in the Web.config file of your 

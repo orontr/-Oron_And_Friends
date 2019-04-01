@@ -1,29 +1,39 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Web;
+
 
 namespace AppointmentScheduling.Models
 {
-    public class Prescription : IHttpHandler
+    public class Prescription
     {
-        /// <summary>
-        /// You will need to configure this handler in the Web.config file of your 
-        /// web and register it with IIS before being able to use it. For more information
-        /// see the following link: https://go.microsoft.com/?linkid=8101007
-        /// </summary>
-        #region IHttpHandler Members
+        [Key]
+        [Required]
+        [RegularExpression("^[1-9]{5}$", ErrorMessage = "Doctor License must be 5 digits (digits 1-9)")]
+        public string DoctorLicense { get; set; }
 
-        public bool IsReusable
-        {
-            // Return false in case your Managed Handler cannot be reused for another request.
-            // Usually this would be false in case you have some state information preserved per request.
-            get { return true; }
-        }
+        [Required]
+        [RegularExpression("^[A-Za-z ]*$", ErrorMessage = "Must use letters only")]
+        public string PatientId { get; set; }
 
-        public void ProcessRequest(HttpContext context)
-        {
-            //write your handler implementation here.
-        }
+        [Required]
+        [RegularExpression("^[A-Za-z ]*$", ErrorMessage = "Must use letters only")]
+        public string LastName { get; set; }
 
-        #endregion
+        [Required]
+        [RegularExpression("^[0-9]{9}$", ErrorMessage = "Doctor Id must be 9 digits (digits 0-9)")]
+        public string DoctorID { get; set; }
+
+        [Required(ErrorMessage = "The Email Address is required")]
+        [EmailAddress(ErrorMessage = "Invalid Email Address")]
+        public string DoctorEmail { get; set; }
+
+        [Required(ErrorMessage = "The Doctor Specialization is required")]
+        public string DoctorSpecialization { get; set; }
+
+        [Required]
+        public string UserName { get; set; }
     }
 }
