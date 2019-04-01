@@ -1,0 +1,45 @@
+﻿@model AppointmentScheduling.Models.Appointment
+@{
+    ViewBag.Title = "AppointmentScheduling";
+}
+
+<script src="~/Scripts/jquery-3.3.1.js"></script>
+<script src="~/Scripts/jquery.validate.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+
+<h2>AppointmentScheduling</h2>
+
+<div style="color:red" id="loadStatus"></div>
+<table id="showAppointmentsTbl" class="table table-bordered table-responsive table-hover">
+    <tr>
+        <td>רופא</td>
+        <td>תאריך </td>
+    </tr>
+</table>
+<div style="color:red" id="loadStatus"></div>
+
+
+
+<script>
+    $("#loadStatus").text("טוען תורים... אנא המתן");
+    $.get("GetAppointmentsVacantByJson", null, BindDataToTable);
+
+    function BindDataToTable(appointments) {
+        $("#showAppointmentsTbl").find("tr:gt(0)").remove();
+        var appointmentsTable = $("#showAppointmentsTbl");
+        for (i = 0; i < appointments.length; i++) {
+            var newRow = "<tr>" +
+                "<td>" + appointments[i].DoctorLicense + "</td>" +
+                "<td>" + new Date(parseInt(appointments[i].Date.substr(6))).getDate() + "/" + (new Date(parseInt(appointments[i].Date.substr(6))).getMonth() + 1) + "/" + new Date(parseInt(appointments[i].Date.substr(6))).getFullYear() + " " + new Date(parseInt(appointments[i].Date.substr(6))).getHours() + ":" + new Date(parseInt(appointments[i].Date.substr(6))).getMinutes() + "</td>" +
+                "<td><input value='הזמן תור' type='button' class='theButton' id='ma' onclick='appointments[i].DoctorLicense ''></td>" +
+                    "</tr>";
+            appointmentsTable.append(newRow);
+            
+        }
+        $('td').click(function (e) {
+            
+            location.href = '@Url.Action("chooseAppointment")';
+        });
+        $("#loadStatus").text("");
+    }
+</script>
