@@ -1,7 +1,9 @@
-﻿using AppointmentScheduling.Models;
+﻿using AppointmentScheduling.DAL;
+using AppointmentScheduling.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Web;
 using System.Web.Mvc;
 
@@ -26,9 +28,24 @@ namespace AppointmentScheduling.Controllers
         {
             if (!Authorize())
                 return RedirectToAction("RedirectByUser", "Home");
-
-            return View();
+            return View(new Appointment());
         }
 
+        public ActionResult GetAppointmentsVacantByJson()
+        {
+            if (Session["CurrentUser"] == null)
+                return RedirectToAction("RedirectByUser", "Home");
+            AppointmentDal appDal = new AppointmentDal();
+            List<Appointment> appointments = (from app in appDal.Appointments
+                                              where app.PatientID == null
+                                              select app).ToList<Appointment>();
+            Thread.Sleep(1000);
+            return Json(appointments, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult chooseAppointment(string e)
+        {
+            return View("AppointmentScheduling");
+        }
     }
 }
