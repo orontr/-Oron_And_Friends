@@ -34,7 +34,7 @@
                     <td>@Html.TextBoxFor(m => m.Prescription.ExpDate) @Html.ValidationMessageFor(x => x.Prescription.ExpDate)</td>
                 </tr>
                 <tr>
-                    <td>Prescription Code: </td>
+                    <td>Medication Name: </td>
                     <td>@Html.TextBoxFor(m => m.Prescription.Medication) @Html.ValidationMessageFor(x => x.Prescription.PrescriptionCode)</td>
                 </tr>
                 <tr>
@@ -60,7 +60,7 @@
             <td>Patient Id</td>
             <td>Prescription Issue Date</td>
             <td>Prescription Expiration Date</td>
-            <td>Prescription Code</td>
+            <td>Medication</td>
             <td>Doctor's License</td>
         </tr>
     </table>
@@ -76,7 +76,7 @@
                     "<td>" + Prescriptions[k].PatientID + "</td>" +
                     "<td>" + Prescriptions[k].IssueDate + "</td>" +
                     "<td>" + Prescriptions[k].ExpDate + "</td>" +
-                    "<td>" + Prescriptions[k].PrescriptionCode + "</td>" +
+                    "<td>" + Prescriptions[k].Medication + "</td>" +
                     "<td>" + Prescriptions[k].DoctorLicense + "</td>" +
                     "</tr>";
                 tbl.append(newRow);
@@ -93,7 +93,7 @@
             $("#Prescription_PatientID").val("");
             $("#Prescription_IssueDate").val("");
             $("#Prescription_ExpDate").val("");
-            $("#Prescription_PrescriptionCode").val("");
+            $("#Prescription_Medication").val("");
             $("#Prescription_DoctorLicense").val("");
             $("#status").text("");
         }

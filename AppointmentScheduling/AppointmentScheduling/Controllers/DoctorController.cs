@@ -175,6 +175,89 @@ namespace AppointmentScheduling.Controllers
 
 
         }
+
+
+        /////////////////////////Prescription///////////////////////////////////////////
+        public ActionResult GetPrescriptionsByJson()
+        {
+            PrescriptionDal Presdal = new PrescriptionDal();
+            Thread.Sleep(3000);
+            List<Prescription> objPrescriptions = Presdal.Prescriptions.ToList<Prescription>();
+
+            return Json(objPrescriptions, JsonRequestBehavior.AllowGet);
+        }
+        [Authorize]
+        //AddPerfume is addressing to the form to get data from the user
+        public ActionResult AddPrescription()
+        {
+            PrescriptionDal Presdal = new PrescriptionDal();
+            List<Prescription> objPrescriptions = Presdal.Prescriptions.ToList<Prescription>();
+            PrescriptionViewModel cvm = new PrescriptionViewModel();
+            cvm.Prescription = new Prescription();
+            cvm.Prescriptions = objPrescriptions;
+
+            return View("AddDocPrescription", cvm);
+        }
+
+        //we get the data from the form that the user filled (Product.cshtml) the data is passed to the Product controller
+        //and the object that was created (cust) we send to Product view (strongly typed view-works with Product model)
+        /*we can pass an object to the function instead of writing all the things below and that because all the named in the html page are identical to fields in the Product model/class */
+
+
+        [HttpPost]
+        public ActionResult SubmitSup()
+        {
+            Prescription objPrescription = new Prescription();
+            objPrescription.PatientID = Request.Form["Prescription.PrescriptionId"].ToString();
+            objPrescription.IssueDate = Request.Form["Prescription.PrescriptionName"].ToString();
+            objPrescription.ExpDate = Request.Form["Prescription.PrescriptionEmail"].ToString();
+            objPrescription.Medication = Request.Form["Prescription.PrescriptionAddress"].ToString();
+            objPrescription.DoctorLicense = Request.Form["Prescription.PrescriptionPhoneNumber"].ToString();
+
+            PrescriptionDal Presdal = new PrescriptionDal();
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+
+                    Presdal.Prescriptions.Add(objPrescription);//in memory adding only
+                    Presdal.SaveChanges();
+                }
+                catch (Exception)
+                {
+                    TempData["error"] = "The supplier already exist!\n"; // print error message
+                    return View();
+                }
+
+            }
+            List<Prescription> objPrescriptions = Presdal.Prescriptions.ToList<Prescription>();
+            Thread.Sleep(3000);
+            return Json(objPrescriptions, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult ShowPrescriptionSearch()
+        {
+            PrescriptionViewModel cvm = new PrescriptionViewModel();
+            cvm.Prescriptions = new List<Prescription>();
+            return View("SearchPrescription", cvm);//pass model cvm to SearhEmployee cshtml 
+        }
+
+        public ActionResult SearchPrescription()
+        {
+            PrescriptionDal Presdal = new PrescriptionDal();
+            string searchValue = Request.Form["txtPrescriptionName"].ToString();
+            List<Prescription> objPrescriptions = (from x in Presdal.Prescriptions
+                                           where x.PatientID.Contains(searchValue)
+                                           select x).ToList<Prescription>();
+            PrescriptionViewModel cvm = new PrescriptionViewModel();
+            cvm.Prescriptions = objPrescriptions;
+
+            return View(cvm);
+
+
+        }
+
     }
 
 

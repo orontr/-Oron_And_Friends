@@ -26,10 +26,6 @@
                     <td>@Html.TextBoxFor(m => m.Appointment.PatientID) @Html.ValidationMessageFor(x => x.Appointment.PatientId)</td>
                 </tr>
                 <tr>
-                    <td>Appointment Time: </td>
-                    <td>@Html.TextBoxFor(m => m.Appointment.Time) @Html.ValidationMessageFor(x => x.Appointment.Time)</td>
-                </tr>
-                <tr>
                     <td>Appointment Date: </td>
                     <td>@Html.TextBoxFor(m => m.Appointment.Date) @Html.ValidationMessageFor(x => x.Appointment.Date)</td>
                 </tr>
@@ -54,7 +50,6 @@
     <table id="appointmentTable">
         <tr>
             <td>Patient Id</td>
-            <td>Appointment Time</td>
             <td>Appointment Date</td>
             <td>Doctor's License</td>
         </tr>
@@ -68,8 +63,7 @@
             var tbl = $("#empTable");
             for (k = 0; k < Appointments.length; k++) {
                 var newRow = "<tr>" +
-                    "<td>" + Appointments[k].PatientId + "</td>" +
-                    "<td>" + Appointments[k].Time + "</td>" +
+                    "<td>" + Appointments[k].PatientID + "</td>" +
                     "<td>" + Appointments[k].Date + "</td>" +
                     "<td>" + Appointments[k].DoctorLicense + "</td>" +
                     "</tr>";
@@ -84,8 +78,7 @@
             var frmmData = $("#frmmAdd").serialize();//step 1+2
             $("#status").text("Saving Appointment.....Please Wait");
             $.post("SubmitAppointment", frmmData, BindData);
-            $("#Appointment_PatientId").val("");
-            $("#Appointment_Time").val("");
+            $("#Appointment_PatientID").val("");
             $("#Appointment_Date").val("");
             $("#Appointment_DoctorLicense").val("");
             $("#status").text("");
