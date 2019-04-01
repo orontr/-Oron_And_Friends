@@ -22,5 +22,7 @@ namespace AppointmentScheduling.Controllers
                 return RedirectToAction("RedirectByUser", "Home");
             return View();
         }
+
+
     }
 }
