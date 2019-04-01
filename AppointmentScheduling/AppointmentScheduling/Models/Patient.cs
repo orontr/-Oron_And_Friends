@@ -23,7 +23,7 @@ namespace AppointmentScheduling.Models
         public DateTime BirthDate { get; set; }
         [Required(ErrorMessage ="Enter your email")]
         public string PatientEmail { get; set; }
-        [Required]
+        
         public string UserName { get; set; }
     }
 }
