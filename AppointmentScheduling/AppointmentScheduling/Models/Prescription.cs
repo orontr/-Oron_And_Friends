@@ -18,12 +18,8 @@ namespace AppointmentScheduling.Models
         public string PatientId { get; set; }
 
         [Required]
-        [RegularExpression("^[A-Za-z ]*$", ErrorMessage = "Must use letters only")]
-        public DateTime LastName { get; set; }
-
-        [Required]
         [RegularExpression("^[0-9]{9}$", ErrorMessage = "Doctor Id must be 9 digits (digits 0-9)")]
-        public string DoctorID { get; set; }
+        public DateTime IssueDate { get; set; }
 
         [Required(ErrorMessage = "The Email Address is required")]
         [EmailAddress(ErrorMessage = "Invalid Email Address")]
@@ -32,7 +28,5 @@ namespace AppointmentScheduling.Models
         [Required(ErrorMessage = "The Doctor Specialization is required")]
         public string DoctorSpecialization { get; set; }
 
-        [Required]
-        public string UserName { get; set; }
     }
 }
