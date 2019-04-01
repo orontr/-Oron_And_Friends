@@ -1,29 +1,33 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Web;
 
 namespace AppointmentScheduling.Models
 {
-    public class Referral : IHttpHandler
+    public class Referral
     {
-        /// <summary>
-        /// You will need to configure this handler in the Web.config file of your 
-        /// web and register it with IIS before being able to use it. For more information
-        /// see the following link: https://go.microsoft.com/?linkid=8101007
-        /// </summary>
-        #region IHttpHandler Members
+        [Required]
+        [RegularExpression("^[1-9]{5}$", ErrorMessage = "Doctor License must be 5 digits (digits 1-9)")]
+        public string DoctorLicense { get; set; }
 
-        public bool IsReusable
-        {
-            // Return false in case your Managed Handler cannot be reused for another request.
-            // Usually this would be false in case you have some state information preserved per request.
-            get { return true; }
-        }
+        [Required]
+        [RegularExpression("^[A-Za-z ]*$", ErrorMessage = "Must use letters only")]
+        public string PatientId { get; set; }
 
-        public void ProcessRequest(HttpContext context)
-        {
-            //write your handler implementation here.
-        }
+        [Required]
+        [DataType(DataType.Date)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime IssueDate { get; set; }
 
-        #endregion
+        [Required]
+        [DataType(DataType.Date)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime ExpDate { get; set; }
+
+        [Required(ErrorMessage = "Referral Code is required")]
+        public string ReferralCode { get; set; }
+
     }
 }

@@ -18,15 +18,17 @@ namespace AppointmentScheduling.Models
         public string PatientId { get; set; }
 
         [Required]
-        [RegularExpression("^[0-9]{9}$", ErrorMessage = "Doctor Id must be 9 digits (digits 0-9)")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime IssueDate { get; set; }
 
-        [Required(ErrorMessage = "The Email Address is required")]
-        [EmailAddress(ErrorMessage = "Invalid Email Address")]
-        public string DoctorEmail { get; set; }
+        [Required]
+        [DataType(DataType.Date)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime ExpDate { get; set; }
 
-        [Required(ErrorMessage = "The Doctor Specialization is required")]
-        public string DoctorSpecialization { get; set; }
+        [Required(ErrorMessage = "Medication is required")]
+        public string Medication { get; set; }
 
     }
 }
