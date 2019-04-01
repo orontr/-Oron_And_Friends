@@ -14,7 +14,7 @@ namespace AppointmentScheduling.Models
 
         [Required]
         [RegularExpression("^[A-Za-z ]*$", ErrorMessage = "Must use letters only")]
-        public string PatientId { get; set; }
+        public string PatientID { get; set; }
 
         [Required]
         [DataType(DataType.Date)]
