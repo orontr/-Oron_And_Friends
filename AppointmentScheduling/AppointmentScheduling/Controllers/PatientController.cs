@@ -22,7 +22,13 @@ namespace AppointmentScheduling.Controllers
                 return RedirectToAction("RedirectByUser", "Home");
             return View();
         }
+        public ActionResult AppointmentScheduling()
+        {
+            if (!Authorize())
+                return RedirectToAction("RedirectByUser", "Home");
 
+            return View();
+        }
 
     }
 }
