@@ -44,14 +44,14 @@ namespace AppointmentScheduling.Controllers
             return Json(appointments, JsonRequestBehavior.AllowGet);
         }
      
-        public ActionResult ChooseAppointment(Appointment abc)
+        public ActionResult ChooseAppointment(Appointment chosen)
         {
             PatientDal pdal = new PatientDal();
             User currentUser = (User)Session["CurrentUser"];
-            Patient a = pdal.Users.FirstOrDefault<Patient>(x=> x.UserName==currentUser.UserName);
+            Patient currentPatient = pdal.Users.FirstOrDefault<Patient>(x=> x.UserName==currentUser.UserName);
             AppointmentDal appDal = new AppointmentDal();
-            Appointment update = appDal.Appointments.FirstOrDefault<Appointment>(x => x.Date == abc.Date && x.DoctorLicense==abc.DoctorLicense);
-            update.PatientID = a.PatientID;
+            Appointment update = appDal.Appointments.FirstOrDefault<Appointment>(x => x.Date == chosen.Date && x.DoctorLicense== chosen.DoctorLicense);
+            update.PatientID = currentPatient.PatientID;
             appDal.SaveChanges();
             return Json(new { success = true, responseText = "The attached file is not supported." }, JsonRequestBehavior.AllowGet);
         }

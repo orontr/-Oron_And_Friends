@@ -41,17 +41,17 @@
         $("#loadStatus").text("");
         }
 
-    function choose(a, b) {
-        var i = new Object();
-        i.DoctorLicense = a;
-        i.Date = new Date(b);
-        i.PatientID = null;
+    function choose(DoctorLicense, dateapp) {
+        var ch = new Object();
+        ch.DoctorLicense = DoctorLicense;
+        ch.Date = new Date(dateapp);
+        ch.PatientID = null;
         jQuery.ajax({
             type: "POST",
             url: "@Url.Action("ChooseAppointment")",
             dataType: "json",
             contentType: "application/json; charset=utf-8",
-            data: JSON.stringify({ abc :i }),
+            data: JSON.stringify({ chosen: ch }),
             success: function () {
                 alert("Success!");
                 window.location.reload();
