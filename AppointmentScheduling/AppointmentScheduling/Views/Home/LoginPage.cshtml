@@ -15,7 +15,6 @@
             @Html.TextBoxFor(m => m.UserName, new { Class = "form-control" })
             <div style="color:red">@Html.ValidationMessageFor(x => x.UserName)</div>
         </div>
-
         <div>
             <label>Password</label>
             @Html.PasswordFor(m => m.Password, new { Class = "form-control" })

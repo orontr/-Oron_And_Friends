@@ -12,6 +12,19 @@ namespace AppointmentScheduling.Controllers
 {
     public class PatientController : Controller
     {
+        private void MassagAppointment(string Reciver,string msg)
+        {
+            Massage newMsg = new Massage
+            {
+                SenderUserName =((User)Session["CurrentUser"]).UserName,
+                ReciverUserName =Reciver,
+                Read = false,
+                msg = msg
+            };
+            MassageDal msgDal = new MassageDal();
+            msgDal.Massages.Add(newMsg);
+            msgDal.SaveChanges();
+        }
         private bool Authorize()
         {
             if (Session["CurrentUser"] == null)
@@ -83,6 +96,9 @@ namespace AppointmentScheduling.Controllers
             Appointment update = appDal.Appointments.FirstOrDefault<Appointment>(x => x.Date == chosen.Date && x.DoctorLicense == chosen.DoctorLicense);
             update.PatientID =null;
             appDal.SaveChanges();
+            DoctorDal dctDal = new DoctorDal();
+            string DoctorUserName = dctDal.Users.FirstOrDefault<Doctor>(x=> x.DoctorLicense==chosen.DoctorLicense).UserName;
+            MassagAppointment(DoctorUserName, ((User)Session["CurrentUser"]).UserName.ToString() + " cancel appointment in " + chosen.Date.ToString());
             return Json(new { success = true, responseText = "" }, JsonRequestBehavior.AllowGet);
         }
     }
