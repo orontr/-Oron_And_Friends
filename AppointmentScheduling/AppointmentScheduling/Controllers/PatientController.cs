@@ -31,21 +31,21 @@ namespace AppointmentScheduling.Controllers
                 return RedirectToAction("RedirectByUser", "Home");
             return View(new Appointment());
         }
-
         public ActionResult GetAppointmentsVacantByJson()
         {
             if (Session["CurrentUser"] == null)
                 return RedirectToAction("RedirectByUser", "Home");
             AppointmentDal appDal = new AppointmentDal();
             List<Appointment> appointments = (from app in appDal.Appointments
-                                              where app.PatientID == null
+                                              where app.PatientID == null && DateTime.Compare(DateTime.Now, app.Date) < 0
                                               select app).ToList<Appointment>();
             Thread.Sleep(1000);
             return Json(appointments, JsonRequestBehavior.AllowGet);
         }
-     
         public ActionResult ChooseAppointment(Appointment chosen)
         {
+            if (!Authorize())
+                return RedirectToAction("RedirectByUser", "Home");
             PatientDal pdal = new PatientDal();
             User currentUser = (User)Session["CurrentUser"];
             Patient currentPatient = pdal.Users.FirstOrDefault<Patient>(x=> x.UserName==currentUser.UserName);
@@ -53,7 +53,37 @@ namespace AppointmentScheduling.Controllers
             Appointment update = appDal.Appointments.FirstOrDefault<Appointment>(x => x.Date == chosen.Date && x.DoctorLicense== chosen.DoctorLicense);
             update.PatientID = currentPatient.PatientID;
             appDal.SaveChanges();
-            return Json(new { success = true, responseText = "The attached file is not supported." }, JsonRequestBehavior.AllowGet);
+            return Json(new { success = true, responseText = "" }, JsonRequestBehavior.AllowGet);
+        }
+        public ActionResult YourAppointments()
+        {
+            if (!Authorize())
+                return RedirectToAction("RedirectByUser", "Home");
+            return View(new Appointment());
+        }
+        public ActionResult GetYourAppointmentssByJson()
+        {
+            if (!Authorize())
+                return RedirectToAction("RedirectByUser", "Home");
+            User currentUser = (User)Session["CurrentUser"];
+            AppointmentDal appDal = new AppointmentDal();
+            PatientDal pdal = new PatientDal();
+            Patient currentPatient = pdal.Users.FirstOrDefault<Patient>(x => x.UserName == currentUser.UserName);
+            List<Appointment> appointments = (from app in appDal.Appointments
+                                              where app.PatientID == currentPatient.PatientID && DateTime.Compare(DateTime.Now,app.Date)<0
+                                              select app).ToList<Appointment>();
+            Thread.Sleep(1000);
+            return Json(appointments, JsonRequestBehavior.AllowGet);
+        }
+        public ActionResult CancelAppointment(Appointment chosen)
+        {
+            if (!Authorize())
+                return RedirectToAction("RedirectByUser", "Home");
+            AppointmentDal appDal = new AppointmentDal();
+            Appointment update = appDal.Appointments.FirstOrDefault<Appointment>(x => x.Date == chosen.Date && x.DoctorLicense == chosen.DoctorLicense);
+            update.PatientID =null;
+            appDal.SaveChanges();
+            return Json(new { success = true, responseText = "" }, JsonRequestBehavior.AllowGet);
         }
     }
 }
