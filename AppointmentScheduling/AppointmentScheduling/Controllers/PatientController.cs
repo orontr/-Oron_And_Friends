@@ -1,5 +1,6 @@
 ﻿using AppointmentScheduling.DAL;
 using AppointmentScheduling.Models;
+using AppointmentScheduling.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,10 +43,17 @@ namespace AppointmentScheduling.Controllers
             Thread.Sleep(1000);
             return Json(appointments, JsonRequestBehavior.AllowGet);
         }
-
-        public ActionResult chooseAppointment(string e)
+     
+        public ActionResult ChooseAppointment(Appointment abc)
         {
-            return View("AppointmentScheduling");
+            PatientDal pdal = new PatientDal();
+            User currentUser = (User)Session["CurrentUser"];
+            Patient a = pdal.Users.FirstOrDefault<Patient>(x=> x.UserName==currentUser.UserName);
+            AppointmentDal appDal = new AppointmentDal();
+            Appointment update = appDal.Appointments.FirstOrDefault<Appointment>(x => x.Date == abc.Date && x.DoctorLicense==abc.DoctorLicense);
+            update.PatientID = a.PatientID;
+            appDal.SaveChanges();
+            return Json(new { success = true, responseText = "The attached file is not supported." }, JsonRequestBehavior.AllowGet);
         }
     }
 }
