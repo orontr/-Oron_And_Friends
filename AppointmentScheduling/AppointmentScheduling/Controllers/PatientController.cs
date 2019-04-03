@@ -16,6 +16,7 @@ namespace AppointmentScheduling.Controllers
         {
             Massage newMsg = new Massage
             {
+                date = DateTime.Now,
                 SenderUserName =((User)Session["CurrentUser"]).UserName,
                 ReciverUserName =Reciver,
                 Read = false,
