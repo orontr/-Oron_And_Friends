@@ -75,5 +75,15 @@ namespace AppointmentScheduling.Controllers
                 return RedirectToAction("RedirectByUser");
             return View();
         }
+
+
+         public ActionResult Logout()
+        {
+            if (Session["CurrentUser"] == null)
+                return RedirectToAction("RedirectByUser");
+
+            Session["CurrentUser"] = null;
+            return RedirectToAction("RedirectByUser");
+        }
     }
 }
