@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
+using AppointmentScheduling.DAL;
 using AppointmentScheduling.Models;
 
 namespace AppointmentScheduling.viewModel
@@ -26,8 +27,8 @@ namespace AppointmentScheduling.viewModel
         public VMUserRegister()
         {
             PatientDetails = new Patient();
-            NewUser = new User();
-        }
-    }
+            NewUser = new User();   
+            }
+}
 }
 

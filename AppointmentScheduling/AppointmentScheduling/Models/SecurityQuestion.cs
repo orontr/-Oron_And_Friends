@@ -6,12 +6,8 @@ using System.Web;
 
 namespace AppointmentScheduling.Models
 {
-    public class User:UserLogin
+    public class SecurityQuestion
     {
-
-        public  bool UserType { get; set; }
-        [Required]
-        public SecurityQuestion SecurityQuestion { get; set; }
-
+        public string question { get; set; }
     }
 }

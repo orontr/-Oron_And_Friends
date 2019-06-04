@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using AppointmentScheduling.viewModel;
 
 namespace AppointmentScheduling.Controllers
 {
@@ -69,11 +70,20 @@ namespace AppointmentScheduling.Controllers
         }
 
 
-        public ActionResult Signin()
+        public ActionResult SignupPage()
         {
             if (Session["CurrentUser"] != null)
                 return RedirectToAction("RedirectByUser");
-            return View();
+            return View(new VMUserRegister());
         }
+        [HttpPost]
+        public ActionResult Register(VMUserRegister usr)
+        {
+            if (Session["CurrentUser"] != null)
+                return RedirectToAction("RedirectByUser");
+            //usr.NewUser.SecurityQuestion = Request.Form["sq"];
+            return View("LoginPage");
+        }
+
     }
 }
