@@ -24,7 +24,7 @@ namespace AppointmentScheduling.Controllers
             }
             else
             {
-                TempData["notAuthorized"] = "אין הרשאה!";
+                TempData["notAuthorized"] = "You have no permission!";
                 return RedirectToAction("HomePage");
             }
         }
@@ -50,13 +50,13 @@ namespace AppointmentScheduling.Controllers
             if (ModelState.IsValid)
             {
                 UserDal usrDal = new UserDal();
-
+                string decryptedPassword;
                 User objUser = (from user in usrDal.Users
                                 where user.UserName == usr.UserName
                                 select user).FirstOrDefault<User>();
-                if (objUser == null || objUser.Password != usr.Password)
+                if (objUser == null || Cryptography.Decrypt(objUser.Password) != usr.Password)
                 {
-                    ViewBag.errorUserLogin = "UserName or Password incorrect";
+                    ViewBag.errorUserLogin = "UserName or Password are incorrect";
                     return View("LoginPage", usr);
                 }
                 objUser.Password = "";
@@ -111,7 +111,7 @@ namespace AppointmentScheduling.Controllers
                                 select user).FirstOrDefault<User>();
                 if (objUser != null)
                 {
-                    ViewBag.errorUserRegister = "שם המשתמש שבחרת קיים";
+                    ViewBag.errorUserRegister = "The user name is already exist";
                     return View("SignupPage", usr);
                 }
                 usr.NewUser.UserType = false;
@@ -122,7 +122,7 @@ namespace AppointmentScheduling.Controllers
 
                 usrDal.Users.Add(new User {UserName=usr.UserName, Password=encryptedPassword, SecurityAnswer=encryptedAnswer, SecurityQuestion=usr.NewUser.SecurityQuestion, UserType=false });
                 usrDal.SaveChanges();
-                ViewBag.registerSuccessMsg = "ההרשמה בוצעה בהצלחה!";
+                ViewBag.registerSuccessMsg = "The registration succeded!";
                 return View("HomePage", usr.NewUser);
             }
             else
