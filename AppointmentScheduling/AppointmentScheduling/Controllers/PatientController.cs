@@ -12,20 +12,7 @@ namespace AppointmentScheduling.Controllers
 {
     public class PatientController : Controller
     {
-        private void MassagAppointment(string Reciver,string msg)
-        {
-            Massage newMsg = new Massage
-            {
-                date = DateTime.Now,
-                SenderUserName =((User)Session["CurrentUser"]).UserName,
-                ReciverUserName =Reciver,
-                Read = false,
-                msg = msg
-            };
-            MassageDal msgDal = new MassageDal();
-            msgDal.Massages.Add(newMsg);
-            msgDal.SaveChanges();
-        }
+
         private bool Authorize()
         {
             if (Session["CurrentUser"] == null)
@@ -47,7 +34,7 @@ namespace AppointmentScheduling.Controllers
         }
         public ActionResult GetAppointmentsVacantByJson()
         {
-            if (Session["CurrentUser"] == null)
+            if (!Authorize())
                 return RedirectToAction("RedirectByUser", "Home");
             AppointmentDal appDal = new AppointmentDal();
             List<Appointment> appointments = (from app in appDal.Appointments
@@ -170,5 +157,6 @@ namespace AppointmentScheduling.Controllers
             msgDal.SaveChanges();
             return RedirectToAction("ReciverMessages");
         }
+
     }
 }
