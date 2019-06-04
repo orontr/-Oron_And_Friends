@@ -24,10 +24,6 @@ namespace AppointmentScheduling.Models
         public DateTime BirthDate { get; set; }
         [Required(ErrorMessage ="Enter your email")]
         public string PatientEmail { get; set; }
-        public string Question { get; set; }
-        [Required]
-        public string Answer { get; set; }
-
         public string UserName { get; set; }
     }
 }

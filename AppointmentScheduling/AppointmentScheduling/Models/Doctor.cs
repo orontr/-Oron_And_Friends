@@ -10,7 +10,7 @@ namespace AppointmentScheduling.Models
         [Key]
         [Required]
         [RegularExpression("^[1-9]{5}$", ErrorMessage = "Doctor License must be 5 digits (digits 1-9)")]
-        public string DoctorLicense { get; set; }
+        public string DoctorLicenese { get; set; }
 
         [Required]
         [RegularExpression("^[A-Za-z ]*$", ErrorMessage = "Must use letters only")]

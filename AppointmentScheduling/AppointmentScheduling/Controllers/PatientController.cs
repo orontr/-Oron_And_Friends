@@ -100,5 +100,75 @@ namespace AppointmentScheduling.Controllers
             DoctorDal dctDal = new DoctorDal();
             return Json(new { success = true, responseText = "" }, JsonRequestBehavior.AllowGet);
         }
+
+        public ActionResult GetDoctorsByJson()
+        {
+            if (!Authorize())
+                return RedirectToAction("RedirectByUser", "Home");
+            User currentUser = (User)Session["CurrentUser"];
+            DoctorDal docDal = new DoctorDal();
+            List<string> doctors = (from doc in docDal.Users 
+                                    select doc.UserName).ToList<string>();
+            Thread.Sleep(1000);
+            return Json(doctors, JsonRequestBehavior.AllowGet);
+        }
+        public ActionResult MassagePage()
+        {
+            if (!Authorize())
+                return RedirectToAction("RedirectByUser", "Home");
+            return View();
+        }
+        public ActionResult NewMessage()
+        {
+            if (!Authorize())
+                return RedirectToAction("RedirectByUser", "Home");
+            return View(new Massage());
+        }
+        [HttpPost]
+        public ActionResult SendMessage()
+        {
+            if (!Authorize())
+                return RedirectToAction("RedirectByUser", "Home");
+            User CurrentUser = (User)Session["CurrentUser"];
+            Massage msg = new Massage
+            {
+                Read = false,
+                date = DateTime.Now,
+                SenderUserName = CurrentUser.UserName,
+                ReciverUserName = Request.Form["DoctorCombo"],
+                msg = Request.Form["msg"]
+            };
+            TryValidateModel(msg);
+            if (ModelState.IsValid)
+            {
+                MassageDal msgDal = new MassageDal();
+                msgDal.Massages.Add(msg);
+                msgDal.SaveChanges();
+            }
+            return View("MassagePage");
+        }
+        public ActionResult ReciverMessages()
+        {
+            if (!Authorize())
+                return RedirectToAction("RedirectByUser", "Home");
+            User CurrentUser = (User)Session["CurrentUser"];
+            MassageDal msgDal = new MassageDal();
+            VMMassages VMm = new VMMassages { Massages = (from msg in msgDal.Massages
+                                                          where msg.ReciverUserName == CurrentUser.UserName
+                                                          select msg).ToList<Massage>() };
+            return View(VMm);
+        }
+        
+        public ActionResult ReadMassage(string sender , DateTime date)
+        {
+            if (!Authorize())
+                return RedirectToAction("RedirectByUser", "Home");
+            User CurrentUser = (User)Session["CurrentUser"];
+            MassageDal msgDal = new MassageDal();
+            Massage m= msgDal.Massages.FirstOrDefault<Massage>(x => x.ReciverUserName == CurrentUser.UserName && x.SenderUserName == sender && x.date == date);
+            m.Read = true;
+            msgDal.SaveChanges();
+            return RedirectToAction("ReciverMessages");
+        }
     }
 }

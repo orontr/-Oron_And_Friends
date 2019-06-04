@@ -20,9 +20,8 @@
                 @if (Session["CurrentUser"] != null)
                 {
                     @Html.ActionLink("Logout", "Logout", "Home", null, new { @class = "navbar-brand" })
-                    @Html.ActionLink("Notification", "ShowNotification", "Notification", null, new { @class = "navbar-brand" })
                 }
-                else
+                else 
                 {
                     @Html.ActionLink("Login", "LoginPage", "Home", null, new { @class = "navbar-brand" })
                     @Html.ActionLink("Signup", "SignupPage", "Home", null, new { @class = "navbar-brand" })
