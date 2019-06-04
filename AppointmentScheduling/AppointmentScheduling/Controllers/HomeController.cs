@@ -8,8 +8,7 @@ using System.Web.Mvc;
 
 namespace AppointmentScheduling.Controllers
 {
-    public class HomeController : Controller
-    {
+    public class HomeController : Controller {
         public ActionResult RedirectByUser()
         {
             if (Session["CurrentUser"] != null)
@@ -26,7 +25,6 @@ namespace AppointmentScheduling.Controllers
                 return RedirectToAction("HomePage");
             }
         }
-
 
         public ActionResult HomePage()
         {
@@ -67,7 +65,6 @@ namespace AppointmentScheduling.Controllers
                 return View("LoginPage", usr);
             }
         }
-
 
         public ActionResult Signin()
         {
