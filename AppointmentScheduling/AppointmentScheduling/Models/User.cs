@@ -14,6 +14,11 @@ namespace AppointmentScheduling.Models
         public string SecurityQuestion { get; set; }
         [Required]
         public string SecurityAnswer { get; set; }
+        private string privateKEY=(new Random()).ToString();
 
+        public void EncryptQes()
+        {
+
+        }
     }
 }
