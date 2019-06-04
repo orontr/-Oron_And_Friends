@@ -26,12 +26,12 @@
 <h2>SignupPage</h2>
 
 <div id="registerForm">
-    @using (Html.BeginForm("Register", "Home", FormMethod.Post, new { Class = "form-group" }))
+    @using (Html.BeginForm("RegisterCon", "Home", FormMethod.Post, new { Class = "form-group" }))
     {
         <div>
             <label>שם משתמש</label>
-            @Html.TextBoxFor(m => m.NewUser.UserName, new { Class = "form-control" })
-            <div style="color:red">@Html.ValidationMessageFor(x => x.NewUser.UserName)</div>
+            @Html.TextBoxFor(m => m.UserName, new { Class = "form-control" })
+            <div style="color:red">@Html.ValidationMessageFor(x => x.UserName)</div>
         </div>
 
         <div>
@@ -82,9 +82,10 @@
         <div>
             <label>שאלת אבטחה</label>
         <select name="sq" id="sq" @*onchange="getSelectValue();"*@>
-            <option value="Q1">שם חיבה</option>
-            <option value="Q2">שם משפחה קודם של אמך</option>
-            <option value="Q3">חבר ילדות אהוב</option>
+            <option value="שם חיבה">שם חיבה</option>
+            <option value="שם משפחה קודם של אמך">שם משפחה קודם של אמך</option>
+            <option value="חבר ילדות אהוב">חבר ילדות אהוב</option>
+
         </select>
             @*<script>
                 function getSelectValue() {

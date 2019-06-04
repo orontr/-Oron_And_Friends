@@ -6,6 +6,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using AppointmentScheduling.viewModel;
+using AppointmentScheduling.Classes;
 
 namespace AppointmentScheduling.Controllers
 {
@@ -76,14 +77,59 @@ namespace AppointmentScheduling.Controllers
                 return RedirectToAction("RedirectByUser");
             return View(new VMUserRegister());
         }
-        [HttpPost]
-        public ActionResult Register(VMUserRegister usr)
+
+        public ActionResult Register()
         {
             if (Session["CurrentUser"] != null)
                 return RedirectToAction("RedirectByUser");
-            //usr.NewUser.SecurityQuestion = Request.Form["sq"];
-            return View("LoginPage");
+            VMUserRegister newUsr = new VMUserRegister();
+            newUsr.NewUser = new User();
+            return View("SignupPage", newUsr);
         }
 
+        [HttpPost]
+        public ActionResult RegisterCon(VMUserRegister usr)
+        {
+            string encryptedPassword = Cryptography.Encrypt(usr.Password);
+            string encryptedAnswer = Cryptography.Encrypt(usr.PatientDetails.Answer);
+
+            if (Session["CurrentUser"] != null)
+                return RedirectToAction("RedirectByUser");
+
+            usr.NewUser.UserName = usr.UserName;
+            usr.NewUser.Password = usr.Password;
+            //usr.NewUser.SecurityQuestion=usr.Security
+            //usr.NewUser = usr.Email;
+            ModelState.Clear();
+            TryValidateModel(usr);
+            if (ModelState.IsValid)
+            {
+                UserDal usrDal = new UserDal();
+
+                User objUser = (from user in usrDal.Users
+                                where user.UserName == usr.NewUser.UserName
+                                select user).FirstOrDefault<User>();
+                if (objUser != null)
+                {
+                    ViewBag.errorUserRegister = "שם המשתמש שבחרת קיים";
+                    return View("SignupPage", usr);
+                }
+                usr.NewUser.UserType = false;
+
+                //usr.NewUser.Password = encryptedPassword;
+                usr.NewUser.SecurityAnswer = encryptedAnswer;
+                usr.NewUser.SecurityQuestion = Request.Form["sq"];
+
+                usrDal.Users.Add(new User {UserName=usr.UserName, Password=encryptedPassword, SecurityAnswer=encryptedAnswer, SecurityQuestion=usr.NewUser.SecurityQuestion, UserType=false });
+                usrDal.SaveChanges();
+                ViewBag.registerSuccessMsg = "ההרשמה בוצעה בהצלחה!";
+                return View("HomePage", usr.NewUser);
+            }
+            else
+            {
+                usr.Password = "";
+                return View("SignupPage", usr);
+            }
+        }
     }
 }

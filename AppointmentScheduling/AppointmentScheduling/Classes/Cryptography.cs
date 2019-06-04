@@ -4,8 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Security.Cryptography;
 using System.IO;
+using System.ComponentModel.DataAnnotations;
+using System.Web;
 
-namespace EncryptionandDecryption
+
+
+namespace AppointmentScheduling.Classes
 {
     public class Cryptography
     {
