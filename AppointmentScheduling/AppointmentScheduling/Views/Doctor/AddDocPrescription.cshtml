@@ -1,7 +1,104 @@
-﻿
+﻿@model AppointmentScheduling.ViewModel.PrescriptionViewModel
+@using AppointmentScheduling.Models
 @{
-    ViewBag.Title = "AddDocPrescription";
+    Layout = null;
 }
 
-<h2>AddDocPrescription</h2>
+<!DOCTYPE html>
 
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Add Doctor's Prescription</title>
+</head>
+<script src="~/Scripts/jquery-3.3.1.js"></script>
+<script src="~/Scripts/jquery.validate.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+<body>
+    <h3 style="color:hotpink">Add New Doctor's Prescription</h3>
+    <div>
+        <form id="frmmAdd">
+            <i style="color:red">@TempData["error"]</i><br />
+            <table>
+                <tr>
+                    <td>Patient Id: </td>
+                    <td>@Html.TextBoxFor(m => m.Prescription.PatientID) @Html.ValidationMessageFor(x => x.Prescription.PatientID)</td>
+                </tr>
+                <tr>
+                    <td>Prescription Issue Date: </td>
+                    <td>@Html.TextBoxFor(m => m.Prescription.IssueDate) @Html.ValidationMessageFor(x => x.Prescription.IssueDate)</td>
+                </tr>
+                <tr>
+                    <td>Prescription Expiration Date: </td>
+                    <td>@Html.TextBoxFor(m => m.Prescription.ExpDate) @Html.ValidationMessageFor(x => x.Prescription.ExpDate)</td>
+                </tr>
+                <tr>
+                    <td>Medication Name: </td>
+                    <td>@Html.TextBoxFor(m => m.Prescription.Medication) @Html.ValidationMessageFor(x => x.Prescription.PrescriptionCode)</td>
+                </tr>
+                <tr>
+                    <td>Doctor's License: </td>
+                    <td>@Html.TextBoxFor(m => m.Prescription.DoctorLicense) @Html.ValidationMessageFor(x => x.Prescription.DoctorLicense)</td>
+                </tr>
+
+
+                <tr>
+                    <td><input id="btnSubmit" type="button" onclick="SendPrescriptionData()" value="Add Doctor Prescription" /></td>
+                </tr>
+            </table>
+        </form>
+
+
+    </div>
+    <br />
+    @*@Html.Partial("DisplayPrescriptions", Model)*@
+    <b>Existing Prescriptions:</b>
+    <div style="color:red" id="status"></div>
+    <table id="prescriptionTable">
+        <tr>
+            <td>Patient Id</td>
+            <td>Prescription Issue Date</td>
+            <td>Prescription Expiration Date</td>
+            <td>Medication</td>
+            <td>Doctor's License</td>
+        </tr>
+    </table>
+
+    <script>
+        $("#status").text("Loading Prescriptions.....Please Wait");
+        $.get("GetPrescriptionsByJson", null, BindData);//null beacause we dont want to send anything to the server
+        function BindData(Prescriptions) {
+            $("#empTable").find("tr:gt(0)").remove();
+            var tbl = $("#empTable");
+            for (k = 0; k < Prescriptions.length; k++) {
+                var newRow = "<tr>" +
+                    "<td>" + Prescriptions[k].PatientID + "</td>" +
+                    "<td>" + Prescriptions[k].IssueDate + "</td>" +
+                    "<td>" + Prescriptions[k].ExpDate + "</td>" +
+                    "<td>" + Prescriptions[k].Medication + "</td>" +
+                    "<td>" + Prescriptions[k].DoctorLicense + "</td>" +
+                    "</tr>";
+                tbl.append(newRow);
+            }
+
+            $("#status").text("");
+
+        }
+
+        function SendPrescriptionData() {
+            var frmmData = $("#frmmAdd").serialize();//step 1+2
+            $("#status").text("Saving Prescription.....Please Wait");
+            $.post("SubmitPrescription", frmmData, BindData);
+            $("#Prescription_PatientID").val("");
+            $("#Prescription_IssueDate").val("");
+            $("#Prescription_ExpDate").val("");
+            $("#Prescription_Medication").val("");
+            $("#Prescription_DoctorLicense").val("");
+            $("#status").text("");
+        }
+    </script>
+    <br />
+    @Html.ActionLink("Go Back To Home Page", "Index", "Home")
+</body>
+</html>

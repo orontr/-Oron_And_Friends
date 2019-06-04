@@ -1,0 +1,73 @@
+﻿@model AppointmentScheduling.Models.Appointment
+<script src="~/Scripts/jquery-3.3.1.js"></script>
+<script src="~/Scripts/jquery.validate.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+
+@{
+    ViewBag.Title = "YourAppointments";
+}
+
+<h2>YourAppointments</h2>
+
+
+
+
+<div style="color:red" id="loadStatus"></div>
+<table id="showAppointmentsTbl" class="table table-bordered table-responsive table-hover">
+    <tr>
+        <td>רופא</td>
+        <td>תאריך </td>
+    </tr>
+</table>
+<div style="color:red" id="loadStatus"></div>
+
+
+
+<script>
+    $("#loadStatus").text("טוען תורים... אנא המתן");
+    $.get("GetYourAppointmentssByJson", null, BindDataToTable);
+
+    function BindDataToTable(appointments) {
+        $("#showAppointmentsTbl").find("tr:gt(0)").remove();
+        var appointmentsTable = $("#showAppointmentsTbl");
+        for (i = 0; i < appointments.length; i++) {
+            var newRow = "<tr>" +
+                "<td>" + appointments[i].DoctorLicense + "</td>" +
+                "<td>" + new Date(parseInt(appointments[i].Date.substr(6))).getDate() + "/" + (new Date(parseInt(appointments[i].Date.substr(6))).getMonth() + 1) + "/" + new Date(parseInt(appointments[i].Date.substr(6))).getFullYear() + " " + new Date(parseInt(appointments[i].Date.substr(6))).getHours() + ":" + new Date(parseInt(appointments[i].Date.substr(6))).getMinutes() + "</td>" +
+                "<td> <button onclick=choose(" + appointments[i].DoctorLicense + "," + (parseInt(appointments[i].Date.substr(6))) +") > בטל תור</button> </td>" +
+                    "</tr>";
+            appointmentsTable.append(newRow);
+
+
+        }
+        $("#loadStatus").text("");
+        }
+
+    function choose(DoctorLicense, dateapp) {
+        var ch = new Object();
+        ch.DoctorLicense = DoctorLicense;
+        ch.Date = new Date(dateapp);
+        ch.PatientID = null;
+        jQuery.ajax({
+            type: "POST",
+            url: "@Url.Action("CancelAppointment")",
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ chosen: ch }),
+            success: function () {
+                alert("Cancel!");
+                window.location.reload();
+            },
+            failure: function (errMsg) {
+                alert(errMsg);
+            }
+        });
+
+        }
+        function status(s) {
+            alert(s);
+        }
+
+
+</script>
