@@ -91,7 +91,7 @@ namespace AppointmentScheduling.Controllers
         public ActionResult RegisterCon(VMUserRegister usr)
         {
             string encryptedPassword = Cryptography.Encrypt(usr.Password);
-            string encryptedAnswer = Cryptography.Encrypt(usr.PatientDetails.Answer);
+            string encryptedAnswer = Cryptography.Encrypt(usr.NewUser.SecurityAnswer);
 
             if (Session["CurrentUser"] != null)
                 return RedirectToAction("RedirectByUser");
