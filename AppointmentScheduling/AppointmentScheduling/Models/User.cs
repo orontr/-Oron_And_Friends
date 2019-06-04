@@ -6,11 +6,14 @@ using System.Web;
 
 namespace AppointmentScheduling.Models
 {
-    public class User
+    public class User:UserLogin
     {
+
+        public  bool UserType { get; set; }
         [Required]
-        public string UserName { get; set; }
+        public string SecurityQuestion { get; set; }
         [Required]
-        public string password { get; set; }
+        public string SecurityAnswer { get; set; }
+
     }
 }
