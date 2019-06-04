@@ -28,8 +28,6 @@ namespace AppointmentScheduling.Controllers
                 return RedirectToAction("HomePage");
             }
         }
-
-
         public ActionResult HomePage()
         {
             if (Session["CurrentUser"] != null)
@@ -69,15 +67,12 @@ namespace AppointmentScheduling.Controllers
                 return View("LoginPage", usr);
             }
         }
-
-
         public ActionResult SignupPage()
         {
             if (Session["CurrentUser"] != null)
                 return RedirectToAction("RedirectByUser");
             return View(new VMUserRegister());
         }
-
         public ActionResult Register()
         {
             if (Session["CurrentUser"] != null)
@@ -86,7 +81,6 @@ namespace AppointmentScheduling.Controllers
             newUsr.NewUser = new User();
             return View("SignupPage", newUsr);
         }
-
         [HttpPost]
         public ActionResult RegisterCon(VMUserRegister usr)
         {
@@ -131,5 +125,11 @@ namespace AppointmentScheduling.Controllers
                 return View("SignupPage", usr);
             }
         }
+        public ActionResult Logout()
+        {
+            Session["CurrentUser"] = null;
+            return RedirectToAction("HomePage");
+        }
+
     }
 }

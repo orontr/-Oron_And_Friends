@@ -12,7 +12,6 @@ namespace AppointmentScheduling.Controllers
 {
     public class DoctorController : Controller
     {
-
         /////////////////////////Appointments///////////////////////////////////////////
 
         public ActionResult GetAppointmentsByJson()
