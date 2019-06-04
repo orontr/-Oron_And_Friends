@@ -16,6 +16,7 @@ namespace AppointmentScheduling.Controllers
         {
             Massage newMsg = new Massage
             {
+                date = DateTime.Now,
                 SenderUserName =((User)Session["CurrentUser"]).UserName,
                 ReciverUserName =Reciver,
                 Read = false,
@@ -97,8 +98,6 @@ namespace AppointmentScheduling.Controllers
             update.PatientID =null;
             appDal.SaveChanges();
             DoctorDal dctDal = new DoctorDal();
-            string DoctorUserName = dctDal.Users.FirstOrDefault<Doctor>(x=> x.DoctorLicense==chosen.DoctorLicense).UserName;
-            MassagAppointment(DoctorUserName, ((User)Session["CurrentUser"]).UserName.ToString() + " cancel appointment in " + chosen.Date.ToString());
             return Json(new { success = true, responseText = "" }, JsonRequestBehavior.AllowGet);
         }
     }
