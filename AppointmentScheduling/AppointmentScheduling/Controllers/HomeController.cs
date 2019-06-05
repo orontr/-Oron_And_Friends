@@ -48,7 +48,6 @@ namespace AppointmentScheduling.Controllers
             if (ModelState.IsValid)
             {
                 UserDal usrDal = new UserDal();
-                string decryptedPassword;
                 User objUser = (from user in usrDal.Users
                                 where user.UserName == usr.UserName
                                 select user).FirstOrDefault<User>();
@@ -57,7 +56,6 @@ namespace AppointmentScheduling.Controllers
                     ViewBag.errorUserLogin = "UserName or Password are incorrect";
                     return View("LoginPage", usr);
                 }
-                objUser.Password = "";
                 Session["CurrentUser"] = objUser;
                 return RedirectToAction("RedirectByUser");
             }
