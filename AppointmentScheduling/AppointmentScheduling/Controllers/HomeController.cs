@@ -1,12 +1,12 @@
-﻿using AppointmentScheduling.DAL;
+﻿using AppointmentScheduling.Classes;
+using AppointmentScheduling.DAL;
 using AppointmentScheduling.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
 using AppointmentScheduling.viewModel;
-using AppointmentScheduling.Classes;
+using System;
+using System.Linq;
+using System.Net.Mail;
+using System.Text;
+using System.Web.Mvc;
 
 namespace AppointmentScheduling.Controllers
 {
@@ -130,6 +130,73 @@ namespace AppointmentScheduling.Controllers
             Session["CurrentUser"] = null;
             return RedirectToAction("HomePage");
         }
+        public ActionResult ResetPass()
+        {
+            if (Session["CurrentUser"] != null)
+                return RedirectToAction("RedirectByUser");
+            return View();
+        }
+        public ActionResult CheckUser(string userName)
+        {
+            if (Session["CurrentUser"] != null)
+                return RedirectToAction("RedirectByUser");
+            UserDal usrDal = new UserDal();
+            User user = usrDal.Users.FirstOrDefault<User>(x => x.UserName == userName);
+            if (user == null)
+            {
+                ViewBag.errorUserLogin = "UserName doesnt exist";
+                return RedirectToAction("ResetPass");
+            }
+            return View(user);
+        }
+        [HttpPost]
+        public ActionResult SendEmail(User user)
+        {
+            if (Session["CurrentUser"] != null)
+                return RedirectToAction("RedirectByUser");
+            string ans = user.SecurityAnswer;
+            UserDal userdal = new UserDal();
+            user = userdal.Users.FirstOrDefault<User>(x=>x.UserName==user.UserName);
+            if(ans!= Cryptography.Decrypt(user.SecurityAnswer))
+            {
+                ViewBag.ans = "תשובה לא נכונה";
+            }
+            SendNewPass(user);
+            userdal.SaveChanges();
+            return RedirectToAction("LoginPage");
+        }
+        private void SendNewPass(User user)
+        {
+            SmtpClient client = new SmtpClient();
+            client.Port = 587;
+            client.Host = "smtp.gmail.com";
+            client.EnableSsl = true;
+            client.Timeout = 10000;
+            client.DeliveryMethod = SmtpDeliveryMethod.Network;
+            client.UseDefaultCredentials = false;
+            client.Credentials = new System.Net.NetworkCredential("medicalcalendar123", "mc12345!");
+            Patient pat = new PatientDal().Users.FirstOrDefault<Patient>(x=>x.UserName==user.UserName);
+            string mailTo = pat.PatientEmail;
+            try //Mail built-in  validation function.
+            {
+                MailAddress m = new MailAddress(mailTo);
+            }
 
+            catch (FormatException)
+            {
+                Console.WriteLine("Are you sure that you entered a valid mail address? Try again please.");
+                return;
+            }
+
+            Random rnd = new Random();
+            int randNum = rnd.Next(10000, 100000);
+            MailMessage mm = new MailMessage("medicalcalendar123@donotreply.com", mailTo, "Authentication Code for Medical-Calendar", "Authentication number is: " + randNum.ToString() + " .");
+            mm.BodyEncoding = UTF8Encoding.UTF8;
+            mm.DeliveryNotificationOptions = DeliveryNotificationOptions.OnFailure;
+
+            client.Send(mm);
+            user.Password = Cryptography.Encrypt(randNum.ToString());
+        }
+            
     }
 }
