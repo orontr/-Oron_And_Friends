@@ -158,6 +158,7 @@ namespace AppointmentScheduling.Controllers
             if(ans!= Cryptography.Decrypt(user.SecurityAnswer))
             {
                 ViewBag.ans = "תשובה לא נכונה";
+                return RedirectToAction("LoginPage");
             }
             SendNewPass(user);
             userdal.SaveChanges();
@@ -188,7 +189,7 @@ namespace AppointmentScheduling.Controllers
 
             Random rnd = new Random();
             int randNum = rnd.Next(10000, 100000);
-            MailMessage mm = new MailMessage("medicalcalendar123@donotreply.com", mailTo, "Reset Password for Medical-Calendar", "Temporary password is: " + randNum.ToString() + " ./nPlease change your password.");
+            MailMessage mm = new MailMessage("medicalcalendar123@donotreply.com", mailTo, "Reset Password for Medical-Calendar", "Temporary password is: " + randNum.ToString() + " .\nPlease change your password.");
             mm.BodyEncoding = UTF8Encoding.UTF8;
             mm.DeliveryNotificationOptions = DeliveryNotificationOptions.OnFailure;
 
