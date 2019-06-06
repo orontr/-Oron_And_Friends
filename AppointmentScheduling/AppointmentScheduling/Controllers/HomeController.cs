@@ -17,7 +17,7 @@ namespace AppointmentScheduling.Controllers
             if (Session["CurrentUser"] != null)
             {
                 User currentUsr = (User)(Session["CurrentUser"]);
-                if ( (new PatientDal()).Users.FirstOrDefault<Patient>(x=>x.PatientID == Cryptography.Decrypt(currentUsr.UserType))!=null)
+                if ((new PatientDal()).Users.FirstOrDefault<Patient>(x => x.PatientID == Cryptography.Decrypt(currentUsr.UserType)) != null)
                     return RedirectToAction("DoctorPage", "Doctor");
                 else
                     return RedirectToAction("PatientPage", "Patient");
@@ -56,8 +56,10 @@ namespace AppointmentScheduling.Controllers
                     ViewBag.errorUserLogin = "UserName or Password are incorrect";
                     return View("LoginPage", usr);
                 }
-                Session["CurrentUser"] = objUser;
-                return RedirectToAction("RedirectByUser");
+                //Session["CurrentUser"] = objUser;
+                //return RedirectToAction("RedirectByUser");
+                Session["CurrentUserForMail"] = objUser;
+
             }
             else
             {
@@ -154,8 +156,8 @@ namespace AppointmentScheduling.Controllers
                 return RedirectToAction("RedirectByUser");
             string ans = user.SecurityAnswer;
             UserDal userdal = new UserDal();
-            user = userdal.Users.FirstOrDefault<User>(x=>x.UserName==user.UserName);
-            if(ans!= Cryptography.Decrypt(user.SecurityAnswer))
+            user = userdal.Users.FirstOrDefault<User>(x => x.UserName == user.UserName);
+            if (ans != Cryptography.Decrypt(user.SecurityAnswer))
             {
                 ViewBag.ans = "תשובה לא נכונה";
                 return RedirectToAction("LoginPage");
@@ -164,7 +166,8 @@ namespace AppointmentScheduling.Controllers
             userdal.SaveChanges();
             return RedirectToAction("LoginPage");
         }
-        private void SendNewPass(User user)
+
+        private void SendMail(string msg, string topic, string email)
         {
             SmtpClient client = new SmtpClient();
             client.Port = 587;
@@ -174,11 +177,9 @@ namespace AppointmentScheduling.Controllers
             client.DeliveryMethod = SmtpDeliveryMethod.Network;
             client.UseDefaultCredentials = false;
             client.Credentials = new System.Net.NetworkCredential("medicalcalendar123", "mc12345!");
-            Patient pat = new PatientDal().Users.FirstOrDefault<Patient>(x=>x.UserName==user.UserName);
-            string mailTo = pat.PatientEmail;
             try //Mail built-in  validation function.
             {
-                MailAddress m = new MailAddress(mailTo);
+                MailAddress m = new MailAddress(email);
             }
 
             catch (FormatException)
@@ -186,16 +187,24 @@ namespace AppointmentScheduling.Controllers
                 Console.WriteLine("Are you sure that you entered a valid mail address? Try again please.");
                 return;
             }
-
-            Random rnd = new Random();
-            int randNum = rnd.Next(10000, 100000);
-            MailMessage mm = new MailMessage("medicalcalendar123@donotreply.com", mailTo, "Reset Password for Medical-Calendar", "Temporary password is: " + randNum.ToString() + " .\nPlease change your password.");
+            MailMessage mm = new MailMessage("medicalcalendar123@donotreply.com", email, topic, msg);
             mm.BodyEncoding = UTF8Encoding.UTF8;
             mm.DeliveryNotificationOptions = DeliveryNotificationOptions.OnFailure;
 
             client.Send(mm);
+        }
+
+        private void SendNewPass(User user)
+        {
+            Patient pat = new PatientDal().Users.FirstOrDefault<Patient>(x => x.UserName == user.UserName);
+            string email = pat.PatientEmail;
+            Random rnd = new Random();
+            int randNum = rnd.Next(10000, 100000);
+            string body = "Temporary password is: " + randNum.ToString() + " ." + "\nPlease change your password as soon as possible.";
+            string topic = "Password Reset for Medical-Calendar";
+            SendMail(body, topic, email);
             user.Password = Cryptography.Encrypt(randNum.ToString());
         }
-            
+
     }
 }
