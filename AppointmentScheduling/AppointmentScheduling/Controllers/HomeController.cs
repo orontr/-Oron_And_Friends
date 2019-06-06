@@ -17,7 +17,7 @@ namespace AppointmentScheduling.Controllers
             if (Session["CurrentUser"] != null)
             {
                 User currentUsr = (User)(Session["CurrentUser"]);
-                if (currentUsr.UserType)
+                if ( (new PatientDal()).Users.FirstOrDefault<Patient>(x=>x.PatientID == Cryptography.Decrypt(currentUsr.UserType))!=null)
                     return RedirectToAction("DoctorPage", "Doctor");
                 else
                     return RedirectToAction("PatientPage", "Patient");
@@ -106,13 +106,13 @@ namespace AppointmentScheduling.Controllers
                     ViewBag.errorUserRegister = "The user name is already exist";
                     return View("SignupPage", usr);
                 }
-                usr.NewUser.UserType = false;
+                usr.NewUser.UserType = Cryptography.Encrypt(usr.PatientDetails.PatientID);
 
                 //usr.NewUser.Password = encryptedPassword;
                 usr.NewUser.SecurityAnswer = encryptedAnswer;
                 usr.NewUser.SecurityQuestion = Request.Form["sq"];
-
-                usrDal.Users.Add(new User {UserName=usr.UserName, Password=encryptedPassword, SecurityAnswer=encryptedAnswer, SecurityQuestion=usr.NewUser.SecurityQuestion, UserType=false });
+                usr.NewUser.Password = encryptedPassword;
+                usrDal.Users.Add(usr.NewUser);
                 usrDal.SaveChanges();
                 ViewBag.registerSuccessMsg = "The registration succeded!";
                 return View("HomePage", usr.NewUser);
