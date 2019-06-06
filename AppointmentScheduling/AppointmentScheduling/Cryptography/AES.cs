@@ -9,9 +9,9 @@ using System.Web;
 
 
 
-namespace AppointmentScheduling.Classes
+namespace AppointmentScheduling.Cryptography
 {
-    public class Cryptography
+    public class AES
     {
         public static string Encrypt(string encryptString)
         {
@@ -62,4 +62,5 @@ namespace AppointmentScheduling.Classes
             return cipherText;
         }
     }
+
 }

@@ -1,4 +1,4 @@
-﻿using AppointmentScheduling.Classes;
+﻿using AppointmentScheduling.Cryptography;
 using AppointmentScheduling.DAL;
 using AppointmentScheduling.Models;
 using AppointmentScheduling.viewModel;
@@ -55,7 +55,7 @@ namespace AppointmentScheduling.Controllers
                 User objUser = (from user in usrDal.Users
                                 where user.UserName == usr.UserName
                                 select user).FirstOrDefault<User>();
-                if (objUser == null || Cryptography.Decrypt(objUser.Password) != usr.Password)
+                if (objUser == null || AES.Decrypt(objUser.Password) != usr.Password)
                 {
                     ViewBag.errorUserLogin = "UserName or Password are incorrect";
                     return View("LoginPage", usr);
@@ -72,6 +72,10 @@ namespace AppointmentScheduling.Controllers
         }
         public ActionResult SignupPage()
         {
+            DES des = new DES { };
+            string en;
+            en = des.Encrypt("Galit", "Galit@19");
+            des.Decrypt(en, "Galit@19");
             if (Session["CurrentUser"] != null)
                 return RedirectToAction("RedirectByUser");
             return View(new VMUserRegister());
@@ -87,8 +91,8 @@ namespace AppointmentScheduling.Controllers
         [HttpPost]
         public ActionResult RegisterCon(VMUserRegister usr)
         {
-            string encryptedPassword = Cryptography.Encrypt(usr.Password);
-            string encryptedAnswer = Cryptography.Encrypt(usr.NewUser.SecurityAnswer);
+            string encryptedPassword = AES.Encrypt(usr.Password);
+            string encryptedAnswer = AES.Encrypt(usr.NewUser.SecurityAnswer);
 
             if (Session["CurrentUser"] != null)
                 return RedirectToAction("RedirectByUser");
@@ -119,6 +123,7 @@ namespace AppointmentScheduling.Controllers
                 usr.PatientDetails.UserName = usr.UserName;
                 usrDal.Users.Add(usr.NewUser);
                 ptntDal.Patients.Add(usr.PatientDetails);
+                ptntDal.SaveChanges();
                 usrDal.SaveChanges();
                 ViewBag.registerSuccessMsg = "The registration succeded!";
                 return View("HomePage", usr.NewUser);
@@ -161,9 +166,9 @@ namespace AppointmentScheduling.Controllers
             string ans = user.SecurityAnswer;
             UserDal userdal = new UserDal();
             user = userdal.Users.FirstOrDefault<User>(x => x.UserName == user.UserName);
-            if (ans != Cryptography.Decrypt(user.SecurityAnswer))
+            if (ans != AES.Decrypt(user.SecurityAnswer))
             {
-                ViewBag.ans = "תשובה לא נכונה";
+                ViewBag.ans = "The answer is incorrect!";
                 return RedirectToAction("LoginPage");
             }
             SendNewPass(user);
@@ -207,7 +212,7 @@ namespace AppointmentScheduling.Controllers
             string body = "Temporary password is: " + randNum.ToString() + " ." + "\nPlease change your password as soon as possible.";
             string topic = "Password Reset for Medical-Calendar";
             SendMail(body, topic, email);
-            user.Password = Cryptography.Encrypt(randNum.ToString());
+            user.Password = AES.Encrypt(randNum.ToString());
         }
 
     }

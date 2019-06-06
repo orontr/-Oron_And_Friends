@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Web;
 using System.Web.Mvc;
-using AppointmentScheduling.Classes;
+using AppointmentScheduling.Cryptography;
 
 namespace AppointmentScheduling.Controllers
 {
@@ -179,18 +179,18 @@ namespace AppointmentScheduling.Controllers
                 return RedirectToAction("RedirectByUser", "Home");
 
             User currentUser = (User)Session["CurrentUser"];
-            Cryptography.Decrypt("9XJTFF0BiA4seHDJ1sIfhg==");
+            AES.Decrypt("9XJTFF0BiA4seHDJ1sIfhg==");
             TryValidateModel(pass);
             if (ModelState.IsValid)
             {
-                if (pass.oldPass != Cryptography.Decrypt(currentUser.Password))
+                if (pass.oldPass != AES.Decrypt(currentUser.Password))
                 {
                     ViewBag.pass = "old pass doesn't match! Pass hasn't changed";
                     return View("ChangePass");
                 }
                 UserDal usrDal = new UserDal();
                 currentUser = usrDal.Users.FirstOrDefault<User>(x => x.UserName == currentUser.UserName);
-                currentUser.Password = Cryptography.Encrypt(pass.newPass);
+                currentUser.Password = AES.Encrypt(pass.newPass);
                 ViewBag.pass = "pass has changed";
                 return View("ShowDetails");
             }
