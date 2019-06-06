@@ -9,7 +9,7 @@ namespace AppointmentScheduling.DAL
 {
     public class PatientDal : DbContext
     {
-        public DbSet<Patient> Users { get; set; }
+        public DbSet<Patient> Patients { get; set; }
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

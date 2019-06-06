@@ -49,7 +49,7 @@ namespace AppointmentScheduling.Controllers
                 return RedirectToAction("RedirectByUser", "Home");
             PatientDal pdal = new PatientDal();
             User currentUser = (User)Session["CurrentUser"];
-            Patient currentPatient = pdal.Users.FirstOrDefault<Patient>(x => x.UserName == currentUser.UserName);
+            Patient currentPatient = pdal.Patients.FirstOrDefault<Patient>(x => x.UserName == currentUser.UserName);
             AppointmentDal appDal = new AppointmentDal();
             Appointment update = appDal.Appointments.FirstOrDefault<Appointment>(x => x.Date == chosen.Date && x.DoctorLicense == chosen.DoctorLicense);
             update.PatientID = currentPatient.PatientID;
@@ -69,7 +69,7 @@ namespace AppointmentScheduling.Controllers
             User currentUser = (User)Session["CurrentUser"];
             AppointmentDal appDal = new AppointmentDal();
             PatientDal pdal = new PatientDal();
-            Patient currentPatient = pdal.Users.FirstOrDefault<Patient>(x => x.UserName == currentUser.UserName);
+            Patient currentPatient = pdal.Patients.FirstOrDefault<Patient>(x => x.UserName == currentUser.UserName);
             List<Appointment> appointments = (from app in appDal.Appointments
                                               where app.PatientID == currentPatient.PatientID && DateTime.Compare(DateTime.Now, app.Date) < 0
                                               select app).ToList<Appointment>();

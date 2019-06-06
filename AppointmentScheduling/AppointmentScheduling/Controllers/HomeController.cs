@@ -63,7 +63,6 @@ namespace AppointmentScheduling.Controllers
                 Session["CurrentUser"] = objUser;
                 return RedirectToAction("RedirectByUser");
                 //Session["CurrentUserForMail"] = objUser;
-
             }
             else
             {
@@ -103,7 +102,7 @@ namespace AppointmentScheduling.Controllers
             if (ModelState.IsValid)
             {
                 UserDal usrDal = new UserDal();
-
+                PatientDal ptntDal = new PatientDal();
                 User objUser = (from user in usrDal.Users
                                 where user.UserName == usr.NewUser.UserName
                                 select user).FirstOrDefault<User>();
@@ -117,7 +116,9 @@ namespace AppointmentScheduling.Controllers
                 usr.NewUser.SecurityAnswer = encryptedAnswer;
                 usr.NewUser.SecurityQuestion = Request.Form["sq"];
                 usr.NewUser.Password = encryptedPassword;
+                usr.PatientDetails.UserName = usr.UserName;
                 usrDal.Users.Add(usr.NewUser);
+                ptntDal.Patients.Add(usr.PatientDetails);
                 usrDal.SaveChanges();
                 ViewBag.registerSuccessMsg = "The registration succeded!";
                 return View("HomePage", usr.NewUser);
@@ -199,7 +200,7 @@ namespace AppointmentScheduling.Controllers
 
         private void SendNewPass(User user)
         {
-            Patient pat = new PatientDal().Users.FirstOrDefault<Patient>(x => x.UserName == user.UserName);
+            Patient pat = new PatientDal().Patients.FirstOrDefault<Patient>(x => x.UserName == user.UserName);
             string email = pat.PatientEmail;
             Random rnd = new Random();
             int randNum = rnd.Next(10000, 100000);
