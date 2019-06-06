@@ -7,7 +7,7 @@ using System.Web;
 namespace AppointmentScheduling.Models
 {
     public class Doctor {
-        [Key]
+        
         [Required]
         [RegularExpression("^[1-9]{5}$", ErrorMessage = "Doctor License must be 5 digits (digits 1-9)")]
         public string DoctorLicenese { get; set; }
@@ -30,7 +30,7 @@ namespace AppointmentScheduling.Models
 
         [Required(ErrorMessage = "The Doctor Specialization is required")]
         public string DoctorSpecialization { get; set; }
-
+        [Key]
         [Required]
         public string UserName { get; set; }
 

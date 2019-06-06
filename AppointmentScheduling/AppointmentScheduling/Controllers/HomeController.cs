@@ -16,11 +16,15 @@ namespace AppointmentScheduling.Controllers
         {
             if (Session["CurrentUser"] != null)
             {
+
                 User currentUsr = (User)(Session["CurrentUser"]);
-                if ((new PatientDal()).Users.FirstOrDefault<Patient>(x => x.PatientID == Cryptography.Decrypt(currentUsr.UserType)) != null)
+                DoctorDal docDal = new  DoctorDal();
+                if (docDal.Users.FirstOrDefault<Doctor>(x=> x.UserName==currentUsr.UserName)!=null)
                     return RedirectToAction("DoctorPage", "Doctor");
                 else
                     return RedirectToAction("PatientPage", "Patient");
+
+
             }
             else
             {
@@ -56,9 +60,9 @@ namespace AppointmentScheduling.Controllers
                     ViewBag.errorUserLogin = "UserName or Password are incorrect";
                     return View("LoginPage", usr);
                 }
-                //Session["CurrentUser"] = objUser;
-                //return RedirectToAction("RedirectByUser");
-                Session["CurrentUserForMail"] = objUser;
+                Session["CurrentUser"] = objUser;
+                return RedirectToAction("RedirectByUser");
+                //Session["CurrentUserForMail"] = objUser;
 
             }
             else
@@ -108,7 +112,6 @@ namespace AppointmentScheduling.Controllers
                     ViewBag.errorUserRegister = "The user name is already exist";
                     return View("SignupPage", usr);
                 }
-                usr.NewUser.UserType = Cryptography.Encrypt(usr.PatientDetails.PatientID);
 
                 //usr.NewUser.Password = encryptedPassword;
                 usr.NewUser.SecurityAnswer = encryptedAnswer;

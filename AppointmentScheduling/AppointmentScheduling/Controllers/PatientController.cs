@@ -18,8 +18,7 @@ namespace AppointmentScheduling.Controllers
         {
             if (Session["CurrentUser"] == null)
                 return false;
-            Patient obj = (new PatientDal()).Users.FirstOrDefault<Patient>(x=>Cryptography.Decrypt(((User)Session["CurrentUser"]).UserType)== x.PatientID  );
-            return ( obj == null);
+            return true;
         }
         public ActionResult PatientPage()
         {
