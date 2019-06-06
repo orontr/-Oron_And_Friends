@@ -13,7 +13,7 @@ namespace AppointmentScheduling.Controllers
 {
     public class PatientController : Controller
     {
-
+        private DES des = new DES { };
         private bool Authorize()
         {
             if (Session["CurrentUser"] == null)
@@ -69,7 +69,7 @@ namespace AppointmentScheduling.Controllers
             User currentUser = (User)Session["CurrentUser"];
             AppointmentDal appDal = new AppointmentDal();
             PatientDal pdal = new PatientDal();
-            Patient currentPatient = pdal.Patients.FirstOrDefault<Patient>(x => x.UserName == currentUser.UserName);
+            Patient currentPatient = pdal.Patients.FirstOrDefault<Patient>(x => x.UserName== currentUser.UserName);
             List<Appointment> appointments = (from app in appDal.Appointments
                                               where app.PatientID == currentPatient.PatientID && DateTime.Compare(DateTime.Now, app.Date) < 0
                                               select app).ToList<Appointment>();
@@ -95,7 +95,7 @@ namespace AppointmentScheduling.Controllers
             User currentUser = (User)Session["CurrentUser"];
             DoctorDal docDal = new DoctorDal();
             List<string> doctors = (from doc in docDal.Users
-                                    select doc.UserName).ToList<string>();
+                                    select des.Decrypt(doc.UserName, "Galit@19")).ToList<string>();
             Thread.Sleep(1000);
             return Json(doctors, JsonRequestBehavior.AllowGet);
         }
@@ -122,7 +122,7 @@ namespace AppointmentScheduling.Controllers
                 Read = false,
                 date = DateTime.Now,
                 SenderUserName = CurrentUser.UserName,
-                ReciverUserName = Request.Form["DoctorCombo"],
+                ReciverUserName = des.Encrypt(Request.Form["DoctorCombo"], "Galit@19"),
                 msg = Request.Form["msg"]
             };
             TryValidateModel(msg);
@@ -155,7 +155,8 @@ namespace AppointmentScheduling.Controllers
                 return RedirectToAction("RedirectByUser", "Home");
             User CurrentUser = (User)Session["CurrentUser"];
             MassageDal msgDal = new MassageDal();
-            Massage m = msgDal.Massages.FirstOrDefault<Massage>(x => x.ReciverUserName == CurrentUser.UserName && x.SenderUserName == sender && x.date == date);
+            string encryptedsender = des.Encrypt(sender,"Galit@19");
+            Massage m = msgDal.Massages.FirstOrDefault<Massage>(x => x.ReciverUserName == CurrentUser.UserName && x.SenderUserName== encryptedsender && x.date == date);
             m.Read = true;
             msgDal.SaveChanges();
             return RedirectToAction("ReciverMessages");
@@ -175,7 +176,6 @@ namespace AppointmentScheduling.Controllers
         [HttpPost]
         public ActionResult ChangePassSubmit(ChangePassword pass)
         {
-            DES des = new DES { };
             if (!Authorize())
                 return RedirectToAction("RedirectByUser", "Home");
 

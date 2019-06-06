@@ -12,6 +12,7 @@ namespace AppointmentScheduling.Controllers
 {
     public class HomeController : Controller
     {
+        private DES des = new DES { };
         public ActionResult RedirectByUser()
         {
             if (Session["CurrentUser"] != null)
@@ -23,8 +24,6 @@ namespace AppointmentScheduling.Controllers
                     return RedirectToAction("DoctorPage", "Doctor");
                 else
                     return RedirectToAction("PatientPage", "Patient");
-
-
             }
             else
             {
@@ -34,6 +33,7 @@ namespace AppointmentScheduling.Controllers
         }
         public ActionResult HomePage()
         {
+            des.Decrypt("?ÁjB", "Galit@19");
             if (Session["CurrentUser"] != null)
                 return RedirectToAction("RedirectByUser");
             return View();
@@ -47,15 +47,13 @@ namespace AppointmentScheduling.Controllers
         [HttpPost]
         public ActionResult Login(UserLogin usr)
         {
-            DES des = new DES { };
             if (Session["CurrentUser"] != null)
                 return RedirectToAction("RedirectByUser");
             if (ModelState.IsValid)
             {
                 UserDal usrDal = new UserDal();
-                User objUser = (from user in usrDal.Users
-                                where user.UserName == usr.UserName
-                                select user).FirstOrDefault<User>();
+                string encryptedUser = des.Encrypt(usr.UserName, "Galit@19");
+                User objUser = usrDal.Users.FirstOrDefault<User>(x=> x.UserName == encryptedUser);
                 if (objUser == null || des.Decrypt(objUser.Password, "Galit@19") != usr.Password)
                 {
                     ViewBag.errorUserLogin = "UserName or Password are incorrect";
@@ -88,25 +86,23 @@ namespace AppointmentScheduling.Controllers
         [HttpPost]
         public ActionResult RegisterCon(VMUserRegister usr)
         {
-            DES des = new DES { };
-            string encryptedPassword = des.Encrypt(usr.Password, "Galit@19");
+            //string encryptedPassword = des.Encrypt(usr.Password, "Galit@19");
             string encryptedAnswer = AES.Encrypt(usr.NewUser.SecurityAnswer);
-
             if (Session["CurrentUser"] != null)
                 return RedirectToAction("RedirectByUser");
 
-            usr.NewUser.UserName = usr.UserName;
-            usr.NewUser.Password = usr.Password;
+            usr.NewUser.UserName = des.Encrypt(usr.UserName, "Galit@19");
+            usr.NewUser.Password = des.Encrypt(usr.Password, "Galit@19");
 
             ModelState.Clear();
             TryValidateModel(usr);
+
             if (ModelState.IsValid)
             {
                 UserDal usrDal = new UserDal();
                 PatientDal ptntDal = new PatientDal();
-                User objUser = (from user in usrDal.Users
-                                where user.UserName == usr.NewUser.UserName
-                                select user).FirstOrDefault<User>();
+                string encryptedUser = des.Encrypt(usr.UserName, "Galit@19");
+                User objUser = usrDal.Users.FirstOrDefault<User>(x=> x.UserName == encryptedUser); 
                 if (objUser != null)
                 {
                     ViewBag.errorUserRegister = "The user name is already exist";
@@ -115,8 +111,8 @@ namespace AppointmentScheduling.Controllers
 
                 usr.NewUser.SecurityAnswer = encryptedAnswer;
                 usr.NewUser.SecurityQuestion = Request.Form["sq"];
-                usr.NewUser.Password = encryptedPassword;
-                usr.PatientDetails.UserName = usr.UserName;
+                //usr.NewUser.Password = encryptedPassword;
+                usr.PatientDetails.UserName = des.Encrypt(usr.UserName, "Galit@19");
                 usrDal.Users.Add(usr.NewUser);
                 ptntDal.Patients.Add(usr.PatientDetails);
                 ptntDal.SaveChanges();
@@ -146,10 +142,11 @@ namespace AppointmentScheduling.Controllers
             if (Session["CurrentUser"] != null)
                 return RedirectToAction("RedirectByUser");
             UserDal usrDal = new UserDal();
-            User user = usrDal.Users.FirstOrDefault<User>(x => x.UserName == userName);
+            string encryptedUsername = des.Encrypt(userName,"Galit@19");
+            User user = usrDal.Users.FirstOrDefault<User>(x => x.UserName == encryptedUsername);
             if (user == null)
             {
-                ViewBag.errorUserLogin = "UserName doesnt exist";
+                ViewBag.errorUserLogin = "User Name doesn't exist";
                 return RedirectToAction("ResetPass");
             }
             return View(user);
@@ -161,6 +158,7 @@ namespace AppointmentScheduling.Controllers
                 return RedirectToAction("RedirectByUser");
             string ans = user.SecurityAnswer;
             UserDal userdal = new UserDal();
+            //string encryptUsername = des.Encrypt(user.UserName, "Galit@19");
             user = userdal.Users.FirstOrDefault<User>(x => x.UserName == user.UserName);
             if (ans != AES.Decrypt(user.SecurityAnswer))
             {
@@ -201,6 +199,7 @@ namespace AppointmentScheduling.Controllers
 
         private void SendNewPass(User user)
         {
+
             Patient pat = new PatientDal().Patients.FirstOrDefault<Patient>(x => x.UserName == user.UserName);
             string email = pat.PatientEmail;
             Random rnd = new Random();
@@ -208,7 +207,7 @@ namespace AppointmentScheduling.Controllers
             string body = "Temporary password is: " + randNum.ToString() + " ." + "\nPlease change your password as soon as possible.";
             string topic = "Password Reset for Medical-Calendar";
             SendMail(body, topic, email);
-            user.Password = AES.Encrypt(randNum.ToString());
+            user.Password = des.Encrypt(randNum.ToString(),"Galit@19");
         }
 
     }
