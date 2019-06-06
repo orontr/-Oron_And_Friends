@@ -9,7 +9,6 @@ namespace AppointmentScheduling.Models
     public class User:UserLogin
     {
 
-        public  bool UserType { get; set; }
         [Required]
         public string SecurityQuestion { get; set; }
         [Required]

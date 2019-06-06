@@ -9,10 +9,10 @@ namespace AppointmentScheduling.Models
 {
     public class Patient
     {
-        [Key]
-        [Required(ErrorMessage = "Required field")]
-        [RegularExpression("[0-9]+$", ErrorMessage = "מספרים בלבד")]
-        [StringLength(9, ErrorMessage = "9 ספרות בדיוק")]
+        //[Key]
+        //[Required(ErrorMessage = "Required field")]
+        //[RegularExpression("[0-9]+$", ErrorMessage = "מספרים בלבד")]
+        //[StringLength(9, ErrorMessage = "9 ספרות בדיוק")]
         public string PatientID { get; set; }
         [Required(ErrorMessage = "Required field")]
         [RegularExpression("[a-zA-Z]+$", ErrorMessage = "אותיות באנגלית בלבד")]
@@ -24,6 +24,7 @@ namespace AppointmentScheduling.Models
         public DateTime BirthDate { get; set; }
         [Required(ErrorMessage ="Enter your email")]
         public string PatientEmail { get; set; }
+        [Key]
         public string UserName { get; set; }
     }
 }
