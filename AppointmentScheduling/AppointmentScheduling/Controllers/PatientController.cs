@@ -185,13 +185,13 @@ namespace AppointmentScheduling.Controllers
             {
                 if (pass.oldPass != des.Decrypt(currentUser.Password, "Galit@19")) 
                 {
-                    ViewBag.pass = "old pass doesn't match! Pass hasn't changed";
+                    ViewBag.pass = "Old password doesn't match! Password hasn't changed";
                     return View("ChangePass");
                 }
                 UserDal usrDal = new UserDal();
                 currentUser = usrDal.Users.FirstOrDefault<User>(x => x.UserName == currentUser.UserName);
-                currentUser.Password = AES.Encrypt(pass.newPass);
-                ViewBag.pass = "pass has changed";
+                currentUser.Password = des.Decrypt(pass.newPass, "Galit@19");
+                ViewBag.pass = "Password has changed";
                 return View("ShowDetails");
             }
             return View("ChangePass");
