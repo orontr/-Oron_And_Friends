@@ -259,7 +259,4 @@ namespace AppointmentScheduling.Controllers
 
     }
 
-
-
-
 }
