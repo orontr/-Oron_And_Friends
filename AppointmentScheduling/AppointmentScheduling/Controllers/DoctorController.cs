@@ -93,7 +93,7 @@ namespace AppointmentScheduling.Controllers
 
         }
 
-        /////////////////////////Referral///////////////////////////////////////////
+        /////////////////////////Referral/////////////////////////
         public ActionResult GetReferralsByJson()
         {
             ReferralDal refDal = new ReferralDal();
@@ -176,7 +176,7 @@ namespace AppointmentScheduling.Controllers
         }
 
 
-        /////////////////////////Prescription///////////////////////////////////////////
+        /////////////////////////Prescription/////////////////////////
         public ActionResult GetPrescriptionsByJson()
         {
             PrescriptionDal Presdal = new PrescriptionDal();
