@@ -175,15 +175,15 @@ namespace AppointmentScheduling.Controllers
         [HttpPost]
         public ActionResult ChangePassSubmit(ChangePassword pass)
         {
+            DES des = new DES { };
             if (!Authorize())
                 return RedirectToAction("RedirectByUser", "Home");
 
             User currentUser = (User)Session["CurrentUser"];
-            AES.Decrypt("9XJTFF0BiA4seHDJ1sIfhg==");
             TryValidateModel(pass);
             if (ModelState.IsValid)
             {
-                if (pass.oldPass != AES.Decrypt(currentUser.Password))
+                if (pass.oldPass != des.Decrypt(currentUser.Password, "Galit@19")) ;
                 {
                     ViewBag.pass = "old pass doesn't match! Pass hasn't changed";
                     return View("ChangePass");
