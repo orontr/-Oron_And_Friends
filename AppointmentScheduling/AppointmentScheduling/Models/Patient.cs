@@ -10,7 +10,7 @@ namespace AppointmentScheduling.Models
     public class Patient
     {
         [Required(ErrorMessage = "Required field")]
-        //[RegularExpression("[0-9]+$", ErrorMessage = "מספרים בלבד")]
+        [RegularExpression("[0-9]+$", ErrorMessage = "Numbers only")]
         [StringLength(9, ErrorMessage = "9 ספרות בדיוק")]
         public string PatientID { get; set; }
         [Required(ErrorMessage = "Required field")]
