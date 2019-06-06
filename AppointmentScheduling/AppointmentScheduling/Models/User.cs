@@ -8,7 +8,6 @@ namespace AppointmentScheduling.Models
 {
     public class User:UserLogin
     {
-
         [Required]
         public string SecurityQuestion { get; set; }
         [Required]
