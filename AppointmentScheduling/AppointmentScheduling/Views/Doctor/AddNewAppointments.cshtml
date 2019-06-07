@@ -1,0 +1,44 @@
+﻿@model AppointmentScheduling.Models.Appointment
+
+@{
+    ViewBag.Title = "AddNewAppointments";
+}
+
+<h2>AddNewAppointments</h2>
+<link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+@section scripts{
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    <script>
+
+        $(function () {
+            $(".datepicker").datepicker({
+                dateFormat: "dd/mm/yy",
+                changeMonth: true,
+                changeYear: true,
+                showOn: "both",
+                buttonText: "Select"
+
+            });
+        });
+
+    </script>
+}
+
+    <div id="registerForm">
+        @using (Html.BeginForm("AddNewAppointmentSubmit", "Doctor", FormMethod.Post, new { Class = "form-group" }))
+        {
+            <div>
+                <div>
+                    <label>תאריך התור</label>
+                    @Html.EditorFor(m => m.Date, new { htmlAttributes = new { @class = "datepicker" } })
+                    <div style="color:red">@Html.ValidationMessageFor(x => x.Date)</div>
+
+                </div>
+            </div>
+            <input class="btn btn-primary" id="add" type="submit" value="בהוסף" />
+            <div style="color:red">
+                @ViewBag.appexist
+            </div>
+            
+        }
+    </div>

@@ -30,7 +30,13 @@ namespace AppointmentScheduling.Controllers
         {
             if (!Authorize())
                 return RedirectToAction("RedirectByUser", "Home");
-            return View(new Appointment());
+            AppointmentViewModel AppVM = new AppointmentViewModel();
+            AppointmentDal appDal = new AppointmentDal();
+            AppVM.Appointments = (from app in appDal.Appointments
+                                  where app.PatientUserName == null && DateTime.Compare(DateTime.Now, app.Date) < 0
+                                  select app).ToList<Appointment>();
+
+            return View(AppVM);
         }
         public ActionResult GetAppointmentsVacantByJson()
         {
@@ -38,29 +44,38 @@ namespace AppointmentScheduling.Controllers
                 return RedirectToAction("RedirectByUser", "Home");
             AppointmentDal appDal = new AppointmentDal();
             List<Appointment> appointments = (from app in appDal.Appointments
-                                              where app.PatientID == null && DateTime.Compare(DateTime.Now, app.Date) < 0
+                                              where app.PatientUserName == null && DateTime.Compare(DateTime.Now, app.Date) < 0
                                               select app).ToList<Appointment>();
             Thread.Sleep(1000);
             return Json(appointments, JsonRequestBehavior.AllowGet);
         }
-        public ActionResult ChooseAppointment(Appointment chosen)
+
+        public ActionResult ChooseAppointment(string DoctorName, DateTime date)
         {
             if (!Authorize())
                 return RedirectToAction("RedirectByUser", "Home");
+            Appointment chosen = new Appointment { DoctorName = DoctorName, Date = date };
             PatientDal pdal = new PatientDal();
             User currentUser = (User)Session["CurrentUser"];
             Patient currentPatient = pdal.Patients.FirstOrDefault<Patient>(x => x.UserName == currentUser.UserName);
             AppointmentDal appDal = new AppointmentDal();
-            Appointment update = appDal.Appointments.FirstOrDefault<Appointment>(x => x.Date == chosen.Date && x.DoctorLicense == chosen.DoctorLicense);
-            update.PatientID = currentPatient.PatientID;
+            Appointment update = appDal.Appointments.FirstOrDefault<Appointment>(x => x.Date == chosen.Date && x.DoctorName == chosen.DoctorName);
+            update.PatientUserName = currentPatient.UserName;
             appDal.SaveChanges();
-            return Json(new { success = true, responseText = "" }, JsonRequestBehavior.AllowGet);
+            return View("PatientPage");
         }
         public ActionResult YourAppointments()
         {
             if (!Authorize())
                 return RedirectToAction("RedirectByUser", "Home");
-            return View(new Appointment());
+            User curr = (User)Session["CurrentUser"];
+            AppointmentViewModel AppVM = new AppointmentViewModel();
+            AppointmentDal appDal = new AppointmentDal();
+            AppVM.Appointments = (from app in appDal.Appointments
+                                  where app.PatientUserName == curr.UserName && DateTime.Compare(DateTime.Now, app.Date) < 0
+                                  select app).ToList<Appointment>();
+
+            return View(AppVM);
         }
         public ActionResult GetYourAppointmentssByJson()
         {
@@ -69,23 +84,25 @@ namespace AppointmentScheduling.Controllers
             User currentUser = (User)Session["CurrentUser"];
             AppointmentDal appDal = new AppointmentDal();
             PatientDal pdal = new PatientDal();
-            Patient currentPatient = pdal.Patients.FirstOrDefault<Patient>(x => x.UserName== currentUser.UserName);
+            Patient currentPatient = pdal.Patients.FirstOrDefault<Patient>(x => x.UserName == currentUser.UserName);
             List<Appointment> appointments = (from app in appDal.Appointments
-                                              where app.PatientID == currentPatient.PatientID && DateTime.Compare(DateTime.Now, app.Date) < 0
+                                              where app.PatientUserName == currentPatient.UserName && DateTime.Compare(DateTime.Now, app.Date) < 0
                                               select app).ToList<Appointment>();
             Thread.Sleep(1000);
             return Json(appointments, JsonRequestBehavior.AllowGet);
         }
-        public ActionResult CancelAppointment(Appointment chosen)
+        public ActionResult CancelAppointment(string DoctorName, DateTime date)
         {
             if (!Authorize())
                 return RedirectToAction("RedirectByUser", "Home");
+            Appointment chosen = new Appointment { DoctorName = DoctorName, Date = date };
             AppointmentDal appDal = new AppointmentDal();
-            Appointment update = appDal.Appointments.FirstOrDefault<Appointment>(x => x.Date == chosen.Date && x.DoctorLicense == chosen.DoctorLicense);
-            update.PatientID = null;
+            Appointment update = appDal.Appointments.FirstOrDefault<Appointment>(x => x.Date == chosen.Date && x.DoctorName == chosen.DoctorName);
+            update.PatientUserName = null;
             appDal.SaveChanges();
             DoctorDal dctDal = new DoctorDal();
-            return Json(new { success = true, responseText = "" }, JsonRequestBehavior.AllowGet);
+            return View("PatientPage");
+
         }
 
         public ActionResult GetDoctorsByJson()
@@ -155,8 +172,8 @@ namespace AppointmentScheduling.Controllers
                 return RedirectToAction("RedirectByUser", "Home");
             User CurrentUser = (User)Session["CurrentUser"];
             MassageDal msgDal = new MassageDal();
-            string encryptedsender = des.Encrypt(sender,"Galit@19");
-            Massage m = msgDal.Massages.FirstOrDefault<Massage>(x => x.ReciverUserName == CurrentUser.UserName && x.SenderUserName== encryptedsender && x.date == date);
+            string encryptedsender = des.Encrypt(sender, "Galit@19");
+            Massage m = msgDal.Massages.FirstOrDefault<Massage>(x => x.ReciverUserName == CurrentUser.UserName && x.SenderUserName == encryptedsender && x.date == date);
             m.Read = true;
             msgDal.SaveChanges();
             return RedirectToAction("ReciverMessages");
@@ -183,7 +200,7 @@ namespace AppointmentScheduling.Controllers
             TryValidateModel(pass);
             if (ModelState.IsValid)
             {
-                if (pass.oldPass != des.Decrypt(currentUser.Password, "Galit@19")) 
+                if (pass.oldPass != des.Decrypt(currentUser.Password, "Galit@19"))
                 {
                     ViewBag.pass = "Old password doesn't match! Password hasn't changed";
                     return View("ChangePass");
