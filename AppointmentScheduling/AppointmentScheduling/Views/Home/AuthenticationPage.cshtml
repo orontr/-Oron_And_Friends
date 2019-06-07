@@ -1,0 +1,30 @@
+@model AppointmentScheduling.Models.UserLogin
+
+@{
+
+    ViewBag.Title = "Double-check login";
+}
+
+<h2>Double-check login</h2>
+
+<div id="loginForm">
+    @using (Html.BeginForm("AuthenticationPage", "Home", FormMethod.Post, new { Class = "form-group" }))
+    {
+    <div>
+        <label>A main with an Authentication Code has been sent to you</label>
+        <br />
+        <label>please insert Authentication code</label>
+        @Html.TextBoxFor(m => m.AuthenticationCode, new { Class = "form-control" })
+        <div style="color:red">@Html.ValidationMessageFor(x => x.AuthenticationCode)</div>
+    </div>
+    <div style="color:red">
+        @ViewBag.AuthenticationError
+    </div>
+    <br />
+    <div class="input-group">
+        <input class="btn btn-primary" id="login" type="submit" value="Login" />
+    </div>
+    }
+</div>
+
+
