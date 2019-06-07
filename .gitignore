@@ -1,5 +1,9 @@
 AppointmentScheduling/packages
+<<<<<<< HEAD
  AppointmentScheduling/AppointmentScheduling.sln
+=======
+AppointmentScheduling/AppointmentScheduling.sln
+>>>>>>> b0cf58cafc07064c9cb7eb85d8a1c989c876814b
 AppointmentScheduling/.vs/
 AppointmentScheduling/AppointmentScheduling/App_Data
 AppointmentScheduling/AppointmentScheduling/bin
@@ -20,4 +24,8 @@ AppointmentScheduling/AppointmentScheduling/Web.Release.config
 AppointmentScheduling/AppointmentScheduling/Web.config
 AppointmentScheduling/AppointmentScheduling/Views/Shared/_Layout.cshtml
 AppointmentScheduling/AppointmentScheduling/Views/_ViewStart.cshtml
+<<<<<<< HEAD
 AppointmentScheduling/AppointmentScheduling/App_Start/
+=======
+AppointmentScheduling/AppointmentScheduling/App_Start/
+>>>>>>> b0cf58cafc07064c9cb7eb85d8a1c989c876814b
