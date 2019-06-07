@@ -86,6 +86,7 @@ namespace AppointmentScheduling.Controllers
         [HttpPost]
         public ActionResult RegisterCon(VMUserRegister usr)
         {
+            //string encryptedPassword = des.Encrypt(usr.Password, "Galit@19");
             string encryptedAnswer = AES.Encrypt(usr.NewUser.SecurityAnswer);
             if (Session["CurrentUser"] != null)
                 return RedirectToAction("RedirectByUser");
@@ -110,6 +111,7 @@ namespace AppointmentScheduling.Controllers
 
                 usr.NewUser.SecurityAnswer = encryptedAnswer;
                 usr.NewUser.SecurityQuestion = Request.Form["sq"];
+                //usr.NewUser.Password = encryptedPassword;
                 usr.PatientDetails.UserName = des.Encrypt(usr.UserName, "Galit@19");
                 usrDal.Users.Add(usr.NewUser);
                 ptntDal.Patients.Add(usr.PatientDetails);
@@ -156,6 +158,7 @@ namespace AppointmentScheduling.Controllers
                 return RedirectToAction("RedirectByUser");
             string ans = user.SecurityAnswer;
             UserDal userdal = new UserDal();
+            //string encryptUsername = des.Encrypt(user.UserName, "Galit@19");
             user = userdal.Users.FirstOrDefault<User>(x => x.UserName == user.UserName);
             if (ans != AES.Decrypt(user.SecurityAnswer))
             {
