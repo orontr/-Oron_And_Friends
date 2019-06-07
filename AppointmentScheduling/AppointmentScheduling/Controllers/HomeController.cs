@@ -45,17 +45,22 @@ namespace AppointmentScheduling.Controllers
             return View(new UserLogin());
         }
 
-        public ActionResult AuthenticationPage(UserLogin usr)
+        public ActionResult AuthenticationPage()
         {
             if (Session["randNum"] == null || Session["CurrentUser"] == null)
                 return RedirectToAction("RedirectByUser");
-            if (usr.AuthenticationCode == Session["randNum"])
-                return RedirectToAction("RedirectByUser");    
+            string codeFromUser = Request.Form["AuthenticationCode"].toString();
+            string codeFromRandom = Session["randNum"].toString();
+            if (codeFromUser == codeFromRandom)
+            {
+                Session["CurrentUser"] = Session["CurrentUserTemp"];
+                Session["CurrentUserTemp"] = null;
+                return RedirectToAction("RedirectByUser");
+            }
             else
             {
-                Session["CurrentUser"] = null;
                 ViewBag.AuthenticationError = "Authentication failed, please try again.";
-                return View(usr);
+                return View();
             }
         }
 
@@ -75,7 +80,7 @@ namespace AppointmentScheduling.Controllers
                     return View("LoginPage", usr);
                 }
                 Patient pat = new PatientDal().Patients.FirstOrDefault<Patient>(x => x.UserName == encryptedUser);
-                Session["CurrentUser"] = objUser;
+                Session["CurrentUserTemp"] = objUser;
                 string email = pat.PatientEmail;
                 Random rnd = new Random();
                 int randNum = rnd.Next(10000, 100000);
@@ -83,7 +88,7 @@ namespace AppointmentScheduling.Controllers
                 string body = "Authentication number is: " + randNum.ToString() + " .";
                 string topic = "Authentication Code for Medical-Calendar";
                 SendMail(body, topic, email);
-                return View("AuthenticationPage", usr);
+                return View("AuthenticationPage");
                 //return RedirectToAction("RedirectByUser");
             }
             else
