@@ -15,7 +15,7 @@ namespace AppointmentScheduling.Cryptography
     {
         public static string Encrypt(string encryptString)
         {
-            string EncryptionKey = "0ram@1234xxxxxxxxxxtttttuuuuuiiiiio";     
+            string EncryptionKey = "Galit@19";     
             byte[] clearBytes = Encoding.Unicode.GetBytes(encryptString);
             using (Aes encryptor = Aes.Create())
             {
@@ -39,7 +39,7 @@ namespace AppointmentScheduling.Cryptography
 
         public static string Decrypt(string cipherText)
         {
-            string EncryptionKey = "0ram@1234xxxxxxxxxxtttttuuuuuiiiiio";      
+            string EncryptionKey = "Galit@19";      
             cipherText = cipherText.Replace(" ", "+");
             byte[] cipherBytes = Convert.FromBase64String(cipherText);
             using (Aes encryptor = Aes.Create())
