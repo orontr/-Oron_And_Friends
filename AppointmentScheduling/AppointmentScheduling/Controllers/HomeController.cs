@@ -44,6 +44,21 @@ namespace AppointmentScheduling.Controllers
                 return RedirectToAction("RedirectByUser");
             return View(new UserLogin());
         }
+
+        public ActionResult AuthenticationPage(UserLogin usr)
+        {
+            if (Session["randNum"] == null || Session["CurrentUser"] == null)
+                return RedirectToAction("RedirectByUser");
+            if (usr.AuthenticationCode == Session["randNum"])
+                return RedirectToAction("RedirectByUser");    
+            else
+            {
+                Session["CurrentUser"] = null;
+                ViewBag.AuthenticationError = "Authentication failed, please try again.";
+                return View(usr);
+            }
+        }
+
         [HttpPost]
         public ActionResult Login(UserLogin usr)
         {
@@ -59,9 +74,17 @@ namespace AppointmentScheduling.Controllers
                     ViewBag.errorUserLogin = "UserName or Password are incorrect";
                     return View("LoginPage", usr);
                 }
+                Patient pat = PatientDal.Patients.FirstOrDefault<Patient>(x => x.UserName == encryptedUser);
                 Session["CurrentUser"] = objUser;
-                return RedirectToAction("RedirectByUser");
-                //Session["CurrentUserForMail"] = objUser;
+                string email = pat.PatientEmail;
+                Random rnd = new Random();
+                int randNum = rnd.Next(10000, 100000);
+                Session["randNum"] = randNum;
+                string body = "Authentication number is: " + randNum.ToString() + " .";
+                string topic = "Authentication Code for Medical-Calendar";
+                SendMail(body, topic, email);
+                return View("AuthenticationPage", usr);
+                //return RedirectToAction("RedirectByUser");
             }
             else
             {
