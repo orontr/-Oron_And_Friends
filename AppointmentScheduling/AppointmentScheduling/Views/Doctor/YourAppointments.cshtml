@@ -10,18 +10,16 @@
 <br />
 <table class="table table-bordered table-responsive table-hover">
     <tr>
-        <td>  רופא  </td>
+        <td>  מטופל  </td>
         <td>  תאריך  </td>
 
     </tr>
     @foreach (Appointment obj in Model.Appointments)
     {
         <tr>
-            <td>@obj.DoctorName </td>
+            <td>@obj.PatientUserName </td>
             <td>@obj.Date </td>
-            <td>
-                @Html.ActionLink("בטל תור", "CancelAppointment", "Patient", new { DoctorName = obj.DoctorName, date = obj.Date }, null)
-            </td>
+            
 
         </tr>
     }

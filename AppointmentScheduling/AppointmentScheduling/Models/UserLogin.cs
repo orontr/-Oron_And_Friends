@@ -12,7 +12,8 @@ namespace AppointmentScheduling.Models
         [Required (ErrorMessage = "Required field")]
         public string UserName { get; set; }
         [Required (ErrorMessage = "Required field")]
-
         public string Password { get; set; }
+        [Required(ErrorMessage = "Required field")]
+        public string AuthenticationCode { get; set; }
     }
 }
