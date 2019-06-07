@@ -213,7 +213,8 @@ namespace AppointmentScheduling.Controllers
                 }
                 UserDal usrDal = new UserDal();
                 currentUser = usrDal.Users.FirstOrDefault<User>(x => x.UserName == currentUser.UserName);
-                currentUser.Password = des.Decrypt(pass.newPass, "Galit@19");
+                currentUser.Password = des.Encrypt(pass.newPass, "Galit@19");
+                usrDal.SaveChanges();
                 ViewBag.pass = "Password has changed";
                 return View("ShowDetails");
             }

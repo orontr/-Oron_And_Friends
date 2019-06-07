@@ -41,6 +41,11 @@ namespace AppointmentScheduling.Controllers
             if (!Authorize())
                 return RedirectToAction("RedirectByUser", "Home");
             User current = (User)Session["CurrentUser"];
+            if (app.Date < DateTime.Now)
+            {
+                ViewBag.appexist = "לא ניתן להוסיף תורים לזמן שעבר";
+                return View("AddNewAppointments");
+            }
             app.DoctorName = docDal.Users.FirstOrDefault<Doctor>(x => x.UserName == current.UserName).FirstName;
             if(appDal.Appointments.FirstOrDefault<Appointment>(x=>x.Date==app.Date && app.DoctorName == x.DoctorName) != null)
             {
@@ -148,6 +153,44 @@ namespace AppointmentScheduling.Controllers
             m.Read = true;
             msgDal.SaveChanges();
             return RedirectToAction("ReciverMessages");
+        }
+
+        public ActionResult ShowDetails()
+        {
+            if (!Authorize())
+                return RedirectToAction("RedirectByUser", "Home");
+            return View();
+        }
+        public ActionResult ChangePass()
+        {
+            if (!Authorize())
+                return RedirectToAction("RedirectByUser", "Home");
+
+            return View(new ChangePassword());
+        }
+        [HttpPost]
+        public ActionResult ChangePassSubmit(ChangePassword pass)
+        {
+            if (!Authorize())
+                return RedirectToAction("RedirectByUser", "Home");
+
+            User currentUser = (User)Session["CurrentUser"];
+            TryValidateModel(pass);
+            if (ModelState.IsValid)
+            {
+                if (pass.oldPass != des.Decrypt(currentUser.Password, "Galit@19"))
+                {
+                    ViewBag.pass = "Old password doesn't match! Password hasn't changed";
+                    return View("ChangePass");
+                }
+                UserDal usrDal = new UserDal();
+                currentUser = usrDal.Users.FirstOrDefault<User>(x => x.UserName == currentUser.UserName);
+                currentUser.Password = des.Encrypt(pass.newPass, "Galit@19");
+                usrDal.SaveChanges();
+                ViewBag.pass = "Password has changed";
+                return View("ShowDetails");
+            }
+            return View("ChangePass");
         }
     }
 }
