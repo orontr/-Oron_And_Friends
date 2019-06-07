@@ -51,8 +51,104 @@ namespace AppointmentScheduling.Controllers
             appDal.SaveChanges();
             return View("DoctorPage");
         }
+        public ActionResult YourAppointments()
+        {
+            if (!Authorize())
+                return RedirectToAction("RedirectByUser", "Home");
+            User current = (User)Session["CurrentUser"];
+            AppointmentViewModel appVM = new AppointmentViewModel();
+            string DoctorName = docDal.Users.FirstOrDefault<Doctor>(x => x.UserName == current.UserName).FirstName;
+            DateTime d1 = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+            DateTime d2 = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day+1);
+            appVM.Appointments = (from app in appDal.Appointments
+                                  where app.DoctorName == DoctorName && app.PatientUserName!=null && app.Date<d2 && app.Date>d1 
+                                  select app).ToList<Appointment>();
+            for (int i = 0; i < appVM.Appointments.Count; i++)
+                appVM.Appointments[i].PatientUserName = des.Decrypt(appVM.Appointments[i].PatientUserName, "Galit@19");
+            return View(appVM);
+        }
 
 
+
+        public ActionResult GetUsersByJson()
+        {
+            if (!Authorize())
+                return RedirectToAction("RedirectByUser", "Home");
+            User currentUser = (User)Session["CurrentUser"];
+            UserDal usrDal = new UserDal();
+            List<string> users = (from usr in usrDal.Users
+                                  where usr.UserName!= currentUser.UserName
+                                  select usr.UserName).ToList<string>();
+            for (int i = 0; i < users.Count; i++)
+            {
+                users[i] = des.Decrypt(users[i], "Galit@19");
+            }
+            Thread.Sleep(1000);
+            return Json(users, JsonRequestBehavior.AllowGet);
+        }
+        public ActionResult MassagePage()
+        {
+            if (!Authorize())
+                return RedirectToAction("RedirectByUser", "Home");
+            return View();
+        }
+        public ActionResult NewMessage()
+        {
+            if (!Authorize())
+                return RedirectToAction("RedirectByUser", "Home");
+            return View(new Massage());
+        }
+        [HttpPost]
+        public ActionResult SendMessage()
+        {
+            if (!Authorize())
+                return RedirectToAction("RedirectByUser", "Home");
+            User CurrentUser = (User)Session["CurrentUser"];
+            Massage msg = new Massage
+            {
+                Read = false,
+                date = DateTime.Now,
+                SenderUserName = CurrentUser.UserName,
+                ReciverUserName = des.Encrypt(Request.Form["DoctorCombo"], "Galit@19"),
+                msg = Request.Form["msg"]
+            };
+            TryValidateModel(msg);
+            if (ModelState.IsValid)
+            {
+                MassageDal msgDal = new MassageDal();
+                msgDal.Massages.Add(msg);
+                msgDal.SaveChanges();
+            }
+            return View("MassagePage");
+        }
+        public ActionResult ReciverMessages()
+        {
+            if (!Authorize())
+                return RedirectToAction("RedirectByUser", "Home");
+            User CurrentUser = (User)Session["CurrentUser"];
+            MassageDal msgDal = new MassageDal();
+            VMMassages VMm = new VMMassages
+            {
+                Massages = (from msg in msgDal.Massages
+                            where msg.ReciverUserName == CurrentUser.UserName
+                            select msg).ToList<Massage>()
+            };
+            for (int i = 0; i < VMm.Massages.Count; i++)
+                VMm.Massages[i].SenderUserName = des.Decrypt(VMm.Massages[i].SenderUserName,"Galit@19");
+            return View(VMm);
+        }
+        public ActionResult ReadMassage(string sender, DateTime date)
+        {
+            if (!Authorize())
+                return RedirectToAction("RedirectByUser", "Home");
+            User CurrentUser = (User)Session["CurrentUser"];
+            MassageDal msgDal = new MassageDal();
+            string encryptedsender = des.Encrypt(sender, "Galit@19");
+            Massage m = msgDal.Massages.FirstOrDefault<Massage>(x => x.ReciverUserName == CurrentUser.UserName && x.SenderUserName == encryptedsender && x.date == date);
+            m.Read = true;
+            msgDal.SaveChanges();
+            return RedirectToAction("ReciverMessages");
+        }
     }
 }
 

@@ -112,7 +112,11 @@ namespace AppointmentScheduling.Controllers
             User currentUser = (User)Session["CurrentUser"];
             DoctorDal docDal = new DoctorDal();
             List<string> doctors = (from doc in docDal.Users
-                                    select des.Decrypt(doc.UserName, "Galit@19")).ToList<string>();
+                                    select doc.UserName).ToList<string>();
+            for(int i=0;i<doctors.Count;i++)
+            {
+                doctors[i] = des.Decrypt(doctors[i], "Galit@19");
+            }
             Thread.Sleep(1000);
             return Json(doctors, JsonRequestBehavior.AllowGet);
         }
@@ -163,9 +167,10 @@ namespace AppointmentScheduling.Controllers
                             where msg.ReciverUserName == CurrentUser.UserName
                             select msg).ToList<Massage>()
             };
+            for (int i = 0; i < VMm.Massages.Count; i++)
+                VMm.Massages[i].SenderUserName = des.Decrypt(VMm.Massages[i].SenderUserName, "Galit@19");
             return View(VMm);
         }
-
         public ActionResult ReadMassage(string sender, DateTime date)
         {
             if (!Authorize())
@@ -178,6 +183,7 @@ namespace AppointmentScheduling.Controllers
             msgDal.SaveChanges();
             return RedirectToAction("ReciverMessages");
         }
+
         public ActionResult ShowDetails()
         {
             if (!Authorize())
