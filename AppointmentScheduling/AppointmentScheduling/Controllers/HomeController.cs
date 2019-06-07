@@ -74,7 +74,7 @@ namespace AppointmentScheduling.Controllers
                     ViewBag.errorUserLogin = "UserName or Password are incorrect";
                     return View("LoginPage", usr);
                 }
-                Patient pat = PatientDal.Patients.FirstOrDefault<Patient>(x => x.UserName == encryptedUser);
+                Patient pat = new PatientDal().Patients.FirstOrDefault<Patient>(x => x.UserName == encryptedUser);
                 Session["CurrentUser"] = objUser;
                 string email = pat.PatientEmail;
                 Random rnd = new Random();
