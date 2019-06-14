@@ -45,7 +45,7 @@ namespace AppointmentScheduling.Controllers
             return View(new UserLogin());
         }
 
-        public ActionResult AuthenticationPage(string a)
+        public ActionResult AuthenticationPage()
         {
             if (Session["randNum"] == null || Session["CurrentUserTemp"] == null)
                 return RedirectToAction("RedirectByUser");
