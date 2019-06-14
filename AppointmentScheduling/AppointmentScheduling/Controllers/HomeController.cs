@@ -50,8 +50,8 @@ namespace AppointmentScheduling.Controllers
             if (Session["randNum"] == null || Session["CurrentUserTemp"] == null)
                 return RedirectToAction("RedirectByUser");
             string codeFromUser = AuthenticationCodeFromUser;
-            string codeFromRandom = (string)Session["randNum"];
-            if (codeFromUser == codeFromRandom)
+            int codeFromRandom = (int)Session["randNum"];
+            if (codeFromUser == codeFromRandom.ToString())
             {
                 Session["CurrentUser"] = Session["CurrentUserTemp"];
                 Session["CurrentUserTemp"] = null;
