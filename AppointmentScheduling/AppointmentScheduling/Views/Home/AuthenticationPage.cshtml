@@ -1,5 +1,4 @@
 @{
-
     ViewBag.Title = "Double-check login";
 }
 
@@ -9,14 +8,14 @@
     @using (Html.BeginForm("AuthenticationPage", "Home", FormMethod.Post, new { Class = "form-group" }))
     {
     <div>
-        <label>A mail with an Authentication Code has been sent to you</label>
+        <label>A mail with an Authentication Code has been sent to you...</label>
         <br />
         <label>please insert Authentication code</label>
         <br />
 
         <div class="input-group">
         </div>
-            <input id="AuthenticationCode" type="text" />
+            <input type="text" id="AuthenticationCodeFromUser" name="AuthenticationCodeFromUser"  />
             <input class="btn btn-primary" id="a" type="submit" value="Submit" />
         <div style="color:red">
             @ViewBag.AuthenticationError

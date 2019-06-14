@@ -49,7 +49,7 @@ namespace AppointmentScheduling.Controllers
         {
             if (Session["randNum"] == null || Session["CurrentUserTemp"] == null)
                 return RedirectToAction("RedirectByUser");
-            string codeFromUser = Request.Form["AuthenticationCode"];
+            string codeFromUser = (string)AuthenticationCodeFromUser;
             string codeFromRandom = (string)Session["randNum"];
             if (codeFromUser == codeFromRandom)
             {
