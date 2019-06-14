@@ -45,11 +45,11 @@ namespace AppointmentScheduling.Controllers
             return View(new UserLogin());
         }
 
-        public ActionResult AuthenticationPage()
+        public ActionResult AuthenticationPage(string AuthenticationCodeFromUser)
         {
             if (Session["randNum"] == null || Session["CurrentUserTemp"] == null)
                 return RedirectToAction("RedirectByUser");
-            string codeFromUser = (string)AuthenticationCodeFromUser;
+            string codeFromUser = AuthenticationCodeFromUser;
             string codeFromRandom = (string)Session["randNum"];
             if (codeFromUser == codeFromRandom)
             {
