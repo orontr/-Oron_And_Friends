@@ -109,10 +109,12 @@ namespace AppointmentScheduling.Controllers
             if (!Authorize())
                 return RedirectToAction("RedirectByUser", "Home");
             User CurrentUser = (User)Session["CurrentUser"];
+            DateTime dateTime = DateTime.Now;
+            dateTime = new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, dateTime.Hour, dateTime.Minute, dateTime.Second);
             Massage msg = new Massage
             {
                 Read = false,
-                date = DateTime.Now,
+                date = dateTime,
                 SenderUserName = CurrentUser.UserName,
                 ReciverUserName = des.Encrypt(Request.Form["DoctorCombo"], "Galit@19"),
                 msg = Request.Form["msg"]
@@ -142,6 +144,7 @@ namespace AppointmentScheduling.Controllers
                 VMm.Massages[i].SenderUserName = des.Decrypt(VMm.Massages[i].SenderUserName,"Galit@19");
             return View(VMm);
         }
+
         public ActionResult ReadMassage(string sender, DateTime date)
         {
             if (!Authorize())
@@ -149,6 +152,7 @@ namespace AppointmentScheduling.Controllers
             User CurrentUser = (User)Session["CurrentUser"];
             MassageDal msgDal = new MassageDal();
             string encryptedsender = des.Encrypt(sender, "Galit@19");
+            //Massage m = msgDal.Massages.FirstOrDefault<Massage>(x => x.ReciverUserName == CurrentUser.UserName && x.SenderUserName == encryptedsender);
             Massage m = msgDal.Massages.FirstOrDefault<Massage>(x => x.ReciverUserName == CurrentUser.UserName && x.SenderUserName == encryptedsender && x.date == date);
             m.Read = true;
             msgDal.SaveChanges();
