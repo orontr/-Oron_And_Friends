@@ -6,8 +6,8 @@
     <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
     <script>
 
-        $(function () {
-            $(".datepicker").datepicker({
+        $(document).ready(function () {
+            $('.datepicker').datepicker({
                 dateFormat: "dd/mm/yy",
                 changeMonth: true,
                 changeYear: true,
@@ -74,7 +74,7 @@
         <div>
             <div>
                 <label>תאריך לידה</label>
-                @Html.EditorFor(m => m.PatientDetails.BirthDate, new { htmlAttributes = new { @class = "datepicker" } })
+                @Html.EditorFor(m => m.PatientDetails.BirthDate, new { htmlAttributes = new { @Value= "datepicker", @class = "datepicker" }  })
                 <div style="color:red">@Html.ValidationMessageFor(x => x.PatientDetails.BirthDate)</div>
 
             </div>

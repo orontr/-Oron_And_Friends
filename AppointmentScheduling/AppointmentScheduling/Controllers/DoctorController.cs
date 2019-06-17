@@ -40,7 +40,9 @@ namespace AppointmentScheduling.Controllers
         {
             if (!Authorize())
                 return RedirectToAction("RedirectByUser", "Home");
-            User current = (User)Session["CurrentUser"];
+            User current = (User)Session["CurrentUser"];  
+            DateTime temp = new DateTime(app.Date.Year, app.Date.Month, app.Date.Day,Convert.ToInt32( Request.Form["hour"]), Convert.ToInt32(Request.Form["minu"]), 00);
+            app.Date = temp;
             if (app.Date < DateTime.Now)
             {
                 ViewBag.appexist = "לא ניתן להוסיף תורים לזמן שעבר";
