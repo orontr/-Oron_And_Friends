@@ -50,8 +50,8 @@ namespace AppointmentScheduling.Controllers
             if (Session["randNum"] == null || Session["CurrentUserTemp"] == null)
                 return RedirectToAction("RedirectByUser");
             string codeFromUser = AuthenticationCodeFromUser;
-            int codeFromRandom = (int)Session["randNum"];
-            if (codeFromUser == codeFromRandom.ToString())
+            string codeFromRandom = (string)Session["randNum"];
+            if (codeFromUser == codeFromRandom)
             {
                 Session["CurrentUser"] = Session["CurrentUserTemp"];
                 Session["CurrentUserTemp"] = null;
@@ -82,10 +82,19 @@ namespace AppointmentScheduling.Controllers
                 Patient pat = new PatientDal().Patients.FirstOrDefault<Patient>(x => x.UserName == encryptedUser);
                 Session["CurrentUserTemp"] = objUser;
                 string email = pat.PatientEmail;
+
+                string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+                string stringChars = "";
                 Random rnd = new Random();
-                int randNum = rnd.Next(10000, 100000);
-                Session["randNum"] = randNum;
-                string body = "Authentication number is: " + randNum.ToString() + " .";
+
+                for (int i = 0; i < 6; i++)
+                {
+                    stringChars += chars[rnd.Next(chars.Length)];
+                }
+
+                //int randNum = rnd.Next(10000, 100000);
+                Session["randNum"] = stringChars;
+                string body = "Authentication number is: " + stringChars.ToString() + " .";
                 string topic = "Authentication Code for Medical-Calendar";
                 SendMail(body, topic, email);
                 return View("AuthenticationPage");
