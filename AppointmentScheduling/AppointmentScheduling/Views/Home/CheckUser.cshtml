@@ -19,10 +19,3 @@
     }
 </div>
 
-<div>
-    <label>A main with an Authentication Code has been sent to you</label>
-    <br />
-    <label>please insert Authentication code</label>
-    @Html.TextBoxFor(m => m.AuthenticationCode, new { Class = "form-control" })
-    <div style="color:red">@Html.ValidationMessageFor(x => x.AuthenticationCode)</div>
-</div>
